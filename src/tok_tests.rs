@@ -81,10 +81,7 @@ fn tok_close_paren() {
 
 #[test]
 fn tok_line_single() {
-    assert_eq!(
-        line("foo\n"),
-        Ok(("\n", Line(vec![Token::Tag(Tag("foo".into()))])))
-    );
+    assert_eq!(line("foo\n"), Ok(("\n", Line(vec![Token::tag("foo")]))));
 }
 
 #[test]
@@ -94,9 +91,9 @@ fn tok_line_multi() {
         Ok((
             "\n",
             Line(vec![
-                Token::Tag(Tag("foo".into())),
-                Token::Tag(Tag("bar".into())),
-                Token::Tag(Tag("baz".into())),
+                Token::tag("foo"),
+                Token::tag("bar"),
+                Token::tag("baz"),
             ])
         ))
     );
@@ -106,13 +103,7 @@ fn tok_line_multi() {
 fn tok_line_colon() {
     assert_eq!(
         line("foo:\n"),
-        Ok((
-            "\n",
-            Line(vec![
-                Token::Tag(Tag("foo".into())),
-                Token::Open(Open::Colon),
-            ])
-        ))
+        Ok(("\n", Line(vec![Token::tag("foo"), Open::Colon.into()])))
     );
 }
 
@@ -123,9 +114,9 @@ fn tok_line_colon_multi() {
         Ok((
             "\n",
             Line(vec![
-                Token::Tag(Tag("foo".into())),
-                Token::Open(Open::Colon),
-                Token::Tag(Tag("bar".into())),
+                Token::tag("foo"),
+                Open::Colon.into(),
+                Token::tag("bar"),
             ])
         ))
     );
@@ -138,9 +129,9 @@ fn tok_line_trailing_colon() {
         Ok((
             "\n",
             Line(vec![
-                Token::Tag(Tag("foo".into())),
-                Token::Tag(Tag("bar".into())),
-                Token::Open(Open::Colon),
+                Token::tag("foo"),
+                Token::tag("bar"),
+                Open::Colon.into(),
             ])
         ))
     );
@@ -153,10 +144,10 @@ fn tok_line_quoted_colon() {
         Ok((
             "\n",
             Line(vec![
-                Token::Tag(Tag("foo".into())),
-                Token::Tag(Tag("bar".into())),
-                Token::Open(Open::Colon),
-                Token::Tag(Tag("baz: qux".into())),
+                Token::tag("foo"),
+                Token::tag("bar"),
+                Open::Colon.into(),
+                Token::tag("baz: qux"),
             ])
         ))
     );
@@ -169,10 +160,10 @@ fn tok_line_quoted_paren() {
         Ok((
             "\n",
             Line(vec![
-                Token::Tag(Tag("foo".into())),
-                Token::Tag(Tag("bar".into())),
-                Token::Open(Open::Colon),
-                Token::Tag(Tag("baz) qux".into())),
+                Token::tag("foo"),
+                Token::tag("bar"),
+                Open::Colon.into(),
+                Token::tag("baz) qux"),
             ])
         ))
     );
@@ -185,9 +176,9 @@ fn tok_line_open_paren() {
         Ok((
             "\n",
             Line(vec![
-                Token::Tag(Tag("foo".into())),
-                Token::Open(Open::Paren),
-                Token::Tag(Tag("bar".into())),
+                Token::tag("foo"),
+                Open::Paren.into(),
+                Token::tag("bar"),
             ])
         ))
     );
@@ -201,11 +192,11 @@ fn tok_line_open_close() {
         Ok((
             "\n",
             Line(vec![
-                Token::Tag(Tag("foo".into())),
-                Token::Open(Open::Paren),
-                Token::Tag(Tag("bar".into())),
-                Token::Close(Close::Paren),
-                Token::Tag(Tag("baz".into())),
+                Token::tag("foo"),
+                Open::Paren.into(),
+                Token::tag("bar"),
+                Close::Paren.into(),
+                Token::tag("baz"),
             ])
         ))
     );
@@ -219,12 +210,12 @@ fn tok_line_open_close_sigspace() {
         Ok((
             "\n",
             Line(vec![
-                Token::Tag(Tag("foo".into())),
+                Token::tag("foo"),
                 Token::Sigspace,
-                Token::Open(Open::Paren),
-                Token::Tag(Tag("bar".into())),
-                Token::Close(Close::Paren),
-                Token::Tag(Tag("baz".into())),
+                Open::Paren.into(),
+                Token::tag("bar"),
+                Close::Paren.into(),
+                Token::tag("baz"),
             ])
         ))
     );
@@ -237,12 +228,12 @@ fn tok_line_sigspace_two_opens_quoted_paren() {
         Ok((
             "\n",
             Line(vec![
-                Token::Tag(Tag("foo".into())),
+                Token::tag("foo"),
                 Token::Sigspace,
-                Token::Open(Open::Paren),
-                Token::Tag(Tag("bar".into())),
-                Token::Open(Open::Colon),
-                Token::Tag(Tag("baz) qux".into())),
+                Open::Paren.into(),
+                Token::tag("bar"),
+                Open::Colon.into(),
+                Token::tag("baz) qux"),
             ])
         ))
     );
@@ -255,10 +246,10 @@ fn tok_line_sigspace_leading_colon() {
         Ok((
             "\n",
             Line(vec![
-                Token::Tag(Tag("foo".into())),
+                Token::tag("foo"),
                 Token::Sigspace,
-                Token::Open(Open::Colon),
-                Token::Tag(Tag("bar".into())),
+                Open::Colon.into(),
+                Token::tag("bar"),
             ])
         ))
     );
@@ -272,10 +263,10 @@ fn tok_line_space_indent() {
             "\n",
             Line(vec![
                 Token::Indent(Indent(" ")),
-                Token::Tag(Tag("foo".into())),
+                Token::tag("foo"),
                 Token::Sigspace,
-                Token::Open(Open::Colon),
-                Token::Tag(Tag("bar".into())),
+                Open::Colon.into(),
+                Token::tag("bar"),
             ])
         ))
     );
@@ -289,10 +280,10 @@ fn tok_line_spaces_indent() {
             "\n",
             Line(vec![
                 Token::Indent(Indent("   ")),
-                Token::Tag(Tag("foo".into())),
+                Token::tag("foo"),
                 Token::Sigspace,
-                Token::Open(Open::Colon),
-                Token::Tag(Tag("bar".into())),
+                Open::Colon.into(),
+                Token::tag("bar"),
             ])
         ))
     );
@@ -306,10 +297,10 @@ fn tok_line_mixed_indent() {
             "\n",
             Line(vec![
                 Token::Indent(Indent(" \t  ")),
-                Token::Tag(Tag("foo".into())),
+                Token::tag("foo"),
                 Token::Sigspace,
-                Token::Open(Open::Colon),
-                Token::Tag(Tag("bar".into())),
+                Open::Colon.into(),
+                Token::tag("bar"),
             ])
         ))
     );
@@ -323,10 +314,10 @@ fn tok_line_tabs_indent() {
             "\n",
             Line(vec![
                 Token::Indent(Indent("\t")),
-                Token::Tag(Tag("foo".into())),
+                Token::tag("foo"),
                 Token::Sigspace,
-                Token::Open(Open::Colon),
-                Token::Tag(Tag("bar".into())),
+                Open::Colon.into(),
+                Token::tag("bar"),
             ])
         ))
     );
@@ -340,10 +331,10 @@ fn tok_line_tab_indent() {
             "\n",
             Line(vec![
                 Token::Indent(Indent("\t\t\t")),
-                Token::Tag(Tag("foo".into())),
+                Token::tag("foo"),
                 Token::Sigspace,
-                Token::Open(Open::Colon),
-                Token::Tag(Tag("bar".into())),
+                Open::Colon.into(),
+                Token::tag("bar"),
             ])
         ))
     );
@@ -357,7 +348,7 @@ fn tok_line_quoted_quotes() {
             "\n",
             Line(vec![
                 Token::Indent(Indent("   \t  ")),
-                Token::Tag(Tag("\"Foo\"".into())),
+                Token::tag("\"Foo\""),
             ])
         ))
     );
@@ -370,9 +361,9 @@ fn tok_lines_triple() {
         Ok((
             "\n",
             vec![
-                Line(vec![Token::Tag(Tag("foo".into()))]),
-                Line(vec![Token::Tag(Tag("bar".into()))]),
-                Line(vec![Token::Tag(Tag("baz".into()))]),
+                Line(vec![Token::tag("foo")]),
+                Line(vec![Token::tag("bar")]),
+                Line(vec![Token::tag("baz")]),
             ]
         ))
     );
@@ -380,17 +371,14 @@ fn tok_lines_triple() {
 
 #[test]
 fn tok_lines_char() {
-    assert_eq!(
-        lines("1\n"),
-        Ok(("\n", vec![Line(vec![Token::Tag(Tag("1".into()))])]))
-    );
+    assert_eq!(lines("1\n"), Ok(("\n", vec![Line(vec![Token::tag("1")])])));
 }
 
 #[test]
 fn tok_lines_single() {
     assert_eq!(
         lines("one\n"),
-        Ok(("\n", vec![Line(vec![Token::Tag(Tag("one".into()))])]))
+        Ok(("\n", vec![Line(vec![Token::tag("one")])]))
     );
 }
 
@@ -398,13 +386,7 @@ fn tok_lines_single() {
 fn tok_lines_single_two() {
     assert_eq!(
         lines("tw o\n"),
-        Ok((
-            "\n",
-            vec![Line(vec![
-                Token::Tag(Tag("tw".into())),
-                Token::Tag(Tag("o".into())),
-            ])]
-        ))
+        Ok(("\n", vec![Line(vec![Token::tag("tw"), Token::tag("o")])]))
     );
 }
 
@@ -415,11 +397,8 @@ fn tok_lines_double_two() {
         Ok((
             "\n",
             vec![
-                Line(vec![
-                    Token::Tag(Tag("th".into())),
-                    Token::Tag(Tag("r".into())),
-                ]),
-                Line(vec![Token::Tag(Tag("ee".into()))]),
+                Line(vec![Token::tag("th"), Token::tag("r")]),
+                Line(vec![Token::tag("ee")]),
             ]
         ))
     );
@@ -432,11 +411,8 @@ fn tok_lines_second_indent() {
         Ok((
             "\n",
             vec![
-                Line(vec![Token::Tag(Tag("root".into()))]),
-                Line(vec![
-                    Token::Indent(Indent("\t\t")),
-                    Token::Tag(Tag("indent".into())),
-                ]),
+                Line(vec![Token::tag("root")]),
+                Line(vec![Token::Indent(Indent("\t\t")), Token::tag("indent")]),
             ]
         ))
     );
@@ -450,11 +426,8 @@ fn tok_lines_initial_blank() {
             "\n",
             vec![
                 Line(vec![]),
-                Line(vec![Token::Tag(Tag("root".into()))]),
-                Line(vec![
-                    Token::Indent(Indent("\t\t")),
-                    Token::Tag(Tag("indent".into())),
-                ]),
+                Line(vec![Token::tag("root")]),
+                Line(vec![Token::Indent(Indent("\t\t")), Token::tag("indent")]),
             ]
         ))
     );
@@ -468,11 +441,8 @@ fn tok_lines_initial_just_indent() {
             "\n",
             vec![
                 Line(vec![Token::Indent(Indent("  "))]),
-                Line(vec![Token::Tag(Tag("root".into()))]),
-                Line(vec![
-                    Token::Indent(Indent("\t\t")),
-                    Token::Tag(Tag("indent".into())),
-                ]),
+                Line(vec![Token::tag("root")]),
+                Line(vec![Token::Indent(Indent("\t\t")), Token::tag("indent")]),
             ]
         ))
     );
@@ -486,14 +456,8 @@ fn tok_lines_initial_just_indent_then_second_indent() {
             "\n",
             vec![
                 Line(vec![Token::Indent(Indent("  "))]),
-                Line(vec![
-                    Token::Indent(Indent("  ")),
-                    Token::Tag(Tag("root".into())),
-                ]),
-                Line(vec![
-                    Token::Indent(Indent("\t\t")),
-                    Token::Tag(Tag("indent".into())),
-                ]),
+                Line(vec![Token::Indent(Indent("  ")), Token::tag("root")]),
+                Line(vec![Token::Indent(Indent("\t\t")), Token::tag("indent")]),
             ]
         ))
     );
@@ -507,14 +471,8 @@ fn tok_lines_initial_blank_then_second_indent() {
             "\n",
             vec![
                 Line(vec![]),
-                Line(vec![
-                    Token::Indent(Indent("  ")),
-                    Token::Tag(Tag("root".into())),
-                ]),
-                Line(vec![
-                    Token::Indent(Indent("\t\t")),
-                    Token::Tag(Tag("indent".into())),
-                ]),
+                Line(vec![Token::Indent(Indent("  ")), Token::tag("root")]),
+                Line(vec![Token::Indent(Indent("\t\t")), Token::tag("indent")]),
             ]
         ))
     );
@@ -527,14 +485,8 @@ fn tok_lines_initial_indent() {
         Ok((
             "\n",
             vec![
-                Line(vec![
-                    Token::Indent(Indent("  ")),
-                    Token::Tag(Tag("root".into())),
-                ]),
-                Line(vec![
-                    Token::Indent(Indent("\t\t")),
-                    Token::Tag(Tag("indent".into())),
-                ]),
+                Line(vec![Token::Indent(Indent("  ")), Token::tag("root")]),
+                Line(vec![Token::Indent(Indent("\t\t")), Token::tag("indent")]),
             ]
         ))
     );
@@ -550,14 +502,8 @@ fn tok_lines_multi_blank_initials() {
                 Line(vec![]),
                 Line(vec![]),
                 Line(vec![]),
-                Line(vec![
-                    Token::Indent(Indent("  ")),
-                    Token::Tag(Tag("root".into())),
-                ]),
-                Line(vec![
-                    Token::Indent(Indent("\t\t")),
-                    Token::Tag(Tag("indent".into())),
-                ]),
+                Line(vec![Token::Indent(Indent("  ")), Token::tag("root")]),
+                Line(vec![Token::Indent(Indent("\t\t")), Token::tag("indent")]),
             ]
         ))
     );
@@ -569,10 +515,7 @@ fn tok_newlines_lf() {
         lines("a\nb\n"),
         Ok((
             "\n",
-            vec![
-                Line(vec![Token::Tag(Tag("a".into()))]),
-                Line(vec![Token::Tag(Tag("b".into()))]),
-            ]
+            vec![Line(vec![Token::tag("a")]), Line(vec![Token::tag("b")])]
         ))
     );
 }
@@ -583,10 +526,7 @@ fn tok_newlines_cr() {
         lines("a\rb\r"),
         Ok((
             "\r",
-            vec![
-                Line(vec![Token::Tag(Tag("a".into()))]),
-                Line(vec![Token::Tag(Tag("b".into()))]),
-            ]
+            vec![Line(vec![Token::tag("a")]), Line(vec![Token::tag("b")])]
         ))
     );
 }
@@ -597,10 +537,7 @@ fn tok_newlines_crlf() {
         lines("a\r\nb\r\n"),
         Ok((
             "\r\n",
-            vec![
-                Line(vec![Token::Tag(Tag("a".into()))]),
-                Line(vec![Token::Tag(Tag("b".into()))]),
-            ]
+            vec![Line(vec![Token::tag("a")]), Line(vec![Token::tag("b")])]
         ))
     );
 }
@@ -611,10 +548,7 @@ fn tok_newlines_lfcr() {
         lines("a\n\rb\n\r"),
         Ok((
             "\n\r",
-            vec![
-                Line(vec![Token::Tag(Tag("a".into()))]),
-                Line(vec![Token::Tag(Tag("b".into()))]),
-            ]
+            vec![Line(vec![Token::tag("a")]), Line(vec![Token::tag("b")])]
         ))
     );
 }

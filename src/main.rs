@@ -6,7 +6,7 @@ extern crate nom;
 use nom::Needed;
 
 #[cfg(test)]
-mod tests;
+mod tok_tests;
 
 #[derive(Clone, Debug, Default, PartialEq, PartialOrd, Eq, Ord)]
 pub struct Node {
@@ -40,6 +40,30 @@ pub enum Token<'a> {
     Open(Open),
     Close(Close),
     Sigspace,
+}
+
+impl<'a> Token<'a> {
+    pub fn tag(t: &str) -> Self {
+        Tag(t.into()).into()
+    }
+}
+
+impl<'a> From<Tag> for Token<'a> {
+    fn from(tag: Tag) -> Self {
+        Token::Tag(tag)
+    }
+}
+
+impl<'a> From<Open> for Token<'a> {
+    fn from(o: Open) -> Self {
+        Token::Open(o)
+    }
+}
+
+impl<'a> From<Close> for Token<'a> {
+    fn from(c: Close) -> Self {
+        Token::Close(c)
+    }
 }
 
 #[derive(Clone, Debug, Default, PartialEq, PartialOrd, Eq, Ord)]
