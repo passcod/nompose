@@ -24,6 +24,7 @@ pub struct Tag(String);
 pub enum Open {
     Paren,
     Colon,
+    Quote,
     Implied,
 }
 
@@ -114,14 +115,18 @@ named!(line<&str, Line>, map!(do_parse!(
     i: eat_separator!(SPACING) >>
     toks: many0!(alt!(
         multitag => { |mt: Vec<Tag>| mt.into_iter().map(Token::Tag).collect() } |
-        open => { |o| vec![Token::Open(o)] } |
-        close => { |c| vec![Token::Close(c)] } |
+        open => { |o: Open| vec![o.into()] } |
+        close => { |c: Close| vec![c.into()] } |
         spacing => { |_| vec![Token::Sigspace] }
     )) >>
-    (i, toks)
-), |l| {
+    trailq: opt!(do_parse!(
+        tag!("\"") >>
+        s: opt!(is_not!(NEWLINE)) >>
+        (s)
+    )) >>
+    (i, toks, trailq)
+), |(i, aroar, trailq)| {
     let mut toks = vec![];
-    let (i, aroar) = l;
 
     if !i.is_empty() {
         toks.push(Token::Indent(Indent(i)));
@@ -133,10 +138,17 @@ named!(line<&str, Line>, map!(do_parse!(
         }
     }
 
+    if let Some(q) = trailq {
+        toks.push(Open::Quote.into());
+        if let Some(s) = q {
+            toks.push(Token::tag(s));
+        }
+    }
+
     Line(toks)
 }));
 
-named!(lines<&str, Vec<Line> >, map!(do_parse!(
+named!(pub lines<&str, Vec<Line> >, map!(do_parse!(
     nls: many0!(alt!(tag!("\r") | tag!("\r\n") | tag!("\n"))) >>
     lines: separated_list_complete!(newline, line) >>
     (nls, lines)
@@ -149,7 +161,6 @@ named!(lines<&str, Vec<Line> >, map!(do_parse!(
 }));
 
 fn main() {
-    println!("trailing {:?}", quoted_tag("\"Foo\"bar \\\\baz \"\n"));
-    println!("trailing {:?}", line("open\""));
-    println!("trailing {:?}", lines("open\"\n"));
+    println!("open close {:?}", line("foo(bar) baz\n"));
+    println!("open close {:?}", line("foo (bar) baz\n"));
 }

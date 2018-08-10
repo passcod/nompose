@@ -552,3 +552,122 @@ fn newlines_lfcr() {
         ))
     );
 }
+
+#[test]
+fn trailing_quote() {
+    assert_eq!(
+        lines("foo\"\n"),
+        Ok((
+            "\n",
+            vec![Line(vec![Token::tag("foo"), Open::Quote.into()])]
+        ))
+    );
+}
+
+#[test]
+fn trailing_quote_and_spaces() {
+    assert_eq!(
+        line("open\"   \n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("open"),
+                Open::Quote.into(),
+                Token::tag("   "),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn trailing_quote_and_tab() {
+    assert_eq!(
+        line("open\"\t\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("open"),
+                Open::Quote.into(),
+                Token::tag("\t"),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn trailing_quote_and_space() {
+    assert_eq!(
+        line("open\" \n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("open"),
+                Open::Quote.into(),
+                Token::tag(" "),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn trailing_quote_and_mixed_whitespace() {
+    assert_eq!(
+        line("open\" \t \n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("open"),
+                Open::Quote.into(),
+                Token::tag(" \t "),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn trailing_quote_and_word() {
+    assert_eq!(
+        line("open\"ash\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("open"),
+                Open::Quote.into(),
+                Token::tag("ash"),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn quoted_tag_and_trailing_quote() {
+    assert_eq!(
+        line("open\"ash\" bash\"\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("open"),
+                Token::tag("ash"),
+                Token::tag("bash"),
+                Open::Quote.into(),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn quoted_tag_and_trailing_quote_and_work() {
+    assert_eq!(
+        line("open\"ash\" bash\"dash\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("open"),
+                Token::tag("ash"),
+                Token::tag("bash"),
+                Open::Quote.into(),
+                Token::tag("dash"),
+            ])
+        ))
+    );
+}
