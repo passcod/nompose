@@ -1,0 +1,8 @@
+[package]
+authors = ["Félix Saparelli <felix@passcod.name>"]
+name = "nompose"
+version = "0.1.0"
+
+[dependencies.nom]
+version = "4.0.0"
+features = ["verbose-errors"]
