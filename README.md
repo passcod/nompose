@@ -1,6 +1,6 @@
 # nompose
 
-[![Travis CI](https://flat.badgen.net/travis/passcod/nompose/next)][build]
+[![Travis CI](https://flat.badgen.net/travis/passcod/nompose)][build]
 [![License: Artistic 2.0](https://flat.badgen.net/badge/license/Artistic%202.0/purple)][artistic]
 
 Two-pass [termpose] parser.

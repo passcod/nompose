@@ -166,6 +166,4 @@ named!(pub lines<&str, Vec<Line> >, map!(do_parse!(
     lines
 }));
 
-fn main() {
-    println!("escaped trailing {:?}", line("foo bar\" baz \\\"\n"));
-}
+fn main() {}
