@@ -758,3 +758,129 @@ fn quoted_tag_and_trailing_quote_and_escapes() {
         ))
     );
 }
+
+#[test]
+fn big_example() {
+    assert_eq!(
+        lines(
+            "
+mon
+  name leafward
+  affinity creation
+  description \"
+    Plants healing bombs.
+    Standard attack.
+    Watch out, it's fragile!
+  stride 2
+  stamina 3
+  recovery 2
+  health 50
+  abilities
+    move
+    strike drain:2 damage:standard:2
+    bomb drain:3 effect:heal:standard:2 grenadeTimer:2 grenadeHealth:20 range:2 radius:2
+"
+        ),
+        Ok((
+            "\n",
+            vec![
+                Line(vec![]),
+                Line(vec![Token::tag("mon")]),
+                Line(vec![
+                    Token::indent("  "),
+                    Token::tag("name"),
+                    Token::tag("leafward"),
+                ]),
+                Line(vec![
+                    Token::indent("  "),
+                    Token::tag("affinity"),
+                    Token::tag("creation"),
+                ]),
+                Line(vec![
+                    Token::indent("  "),
+                    Token::tag("description"),
+                    Token::Sigspace,
+                    Open::Quote.into(),
+                ]),
+                Line(vec![
+                    Token::indent("    "),
+                    Token::tag("Plants"),
+                    Token::tag("healing"),
+                    Token::tag("bombs."),
+                ]),
+                Line(vec![
+                    Token::indent("    "),
+                    Token::tag("Standard"),
+                    Token::tag("attack."),
+                ]),
+                Line(vec![
+                    Token::indent("    "),
+                    Token::tag("Watch"),
+                    Token::tag("out,"),
+                    Token::tag("it's"),
+                    Token::tag("fragile!"),
+                ]),
+                Line(vec![
+                    Token::indent("  "),
+                    Token::tag("stride"),
+                    Token::tag("2"),
+                ]),
+                Line(vec![
+                    Token::indent("  "),
+                    Token::tag("stamina"),
+                    Token::tag("3"),
+                ]),
+                Line(vec![
+                    Token::indent("  "),
+                    Token::tag("recovery"),
+                    Token::tag("2"),
+                ]),
+                Line(vec![
+                    Token::indent("  "),
+                    Token::tag("health"),
+                    Token::tag("50"),
+                ]),
+                Line(vec![Token::indent("  "), Token::tag("abilities")]),
+                Line(vec![Token::indent("    "), Token::tag("move")]),
+                Line(vec![
+                    Token::indent("    "),
+                    Token::tag("strike"),
+                    Token::tag("drain"),
+                    Open::Colon.into(),
+                    Token::tag("2"),
+                    Token::tag("damage"),
+                    Open::Colon.into(),
+                    Token::tag("standard"),
+                    Open::Colon.into(),
+                    Token::tag("2"),
+                ]),
+                Line(vec![
+                    Token::indent("    "),
+                    Token::tag("bomb"),
+                    Token::tag("drain"),
+                    Open::Colon.into(),
+                    Token::tag("3"),
+                    Token::tag("effect"),
+                    Open::Colon.into(),
+                    Token::tag("heal"),
+                    Open::Colon.into(),
+                    Token::tag("standard"),
+                    Open::Colon.into(),
+                    Token::tag("2"),
+                    Token::tag("grenadeTimer"),
+                    Open::Colon.into(),
+                    Token::tag("2"),
+                    Token::tag("grenadeHealth"),
+                    Open::Colon.into(),
+                    Token::tag("20"),
+                    Token::tag("range"),
+                    Open::Colon.into(),
+                    Token::tag("2"),
+                    Token::tag("radius"),
+                    Open::Colon.into(),
+                    Token::tag("2"),
+                ]),
+            ]
+        ))
+    );
+}
