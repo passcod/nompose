@@ -726,7 +726,7 @@ fn quoted_tag_and_trailing_quote() {
 }
 
 #[test]
-fn quoted_tag_and_trailing_quote_and_work() {
+fn quoted_tag_and_trailing_quote_and_word() {
     assert_eq!(
         line("open\"ash\" bash\"dash\n"),
         Ok((
@@ -737,6 +737,23 @@ fn quoted_tag_and_trailing_quote_and_work() {
                 Token::tag("bash"),
                 Open::Quote.into(),
                 Token::tag("dash"),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn quoted_tag_and_trailing_quote_and_escapes() {
+    assert_eq!(
+        line("open\"ash\" bash\"dash\\\"rash\\\\balderdash\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("open"),
+                Token::tag("ash"),
+                Token::tag("bash"),
+                Open::Quote.into(),
+                Token::tag("dash\"rash\\balderdash"),
             ])
         ))
     );

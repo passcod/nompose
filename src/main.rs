@@ -85,7 +85,7 @@ named!(simple_tag<&str, Tag>, map!(
     |tag| Tag(tag.into())
 ));
 
-named!(escaped_tag_inner<&str, &str>, alt!(complete!(is_not!("\"\\\n")) | eof!()));
+named!(escaped_tag_inner<&str, &str>, alt!(complete!(is_not!("\"\\\r\n")) | eof!()));
 named!(escaped_tag<&str, Tag>, map!(
     escaped_transform!(call!(escaped_tag_inner), '\\', alt!(
         tag!("\\") => { |_| "\\" } |
@@ -125,7 +125,7 @@ named!(line<&str, Line>, map!(do_parse!(
     )) >>
     trailq: opt!(do_parse!(
         tag!("\"") >>
-        s: opt!(is_not!(NEWLINE)) >>
+        s: opt!(escaped_tag) >>
         (s)
     )) >>
     (i, toks, trailq)
@@ -144,8 +144,10 @@ named!(line<&str, Line>, map!(do_parse!(
 
     if let Some(q) = trailq {
         toks.push(Open::Quote.into());
-        if let Some(s) = q {
-            toks.push(Token::tag(s));
+        if let Some(t) = q {
+            if !t.0.is_empty() {
+                toks.push(t.into());
+            }
         }
     }
 
@@ -164,4 +166,6 @@ named!(pub lines<&str, Vec<Line> >, map!(do_parse!(
     lines
 }));
 
-fn main() {}
+fn main() {
+    println!("escaped trailing {:?}", line("foo bar\" baz \\\"\n"));
+}
