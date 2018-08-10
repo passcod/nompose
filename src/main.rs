@@ -44,6 +44,10 @@ pub enum Token<'a> {
 }
 
 impl<'a> Token<'a> {
+    pub fn indent(i: &'a str) -> Self {
+        Token::Indent(Indent(i))
+    }
+
     pub fn tag(t: &str) -> Self {
         Tag(t.into()).into()
     }
@@ -129,7 +133,7 @@ named!(line<&str, Line>, map!(do_parse!(
     let mut toks = vec![];
 
     if !i.is_empty() {
-        toks.push(Token::Indent(Indent(i)));
+        toks.push(Token::indent(i));
     }
 
     for ar in aroar {

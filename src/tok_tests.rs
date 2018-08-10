@@ -335,7 +335,7 @@ fn line_space_indent() {
         Ok((
             "\n",
             Line(vec![
-                Token::Indent(Indent(" ")),
+                Token::indent(" "),
                 Token::tag("foo"),
                 Token::Sigspace,
                 Open::Colon.into(),
@@ -352,7 +352,7 @@ fn line_spaces_indent() {
         Ok((
             "\n",
             Line(vec![
-                Token::Indent(Indent("   ")),
+                Token::indent("   "),
                 Token::tag("foo"),
                 Token::Sigspace,
                 Open::Colon.into(),
@@ -369,7 +369,7 @@ fn line_mixed_indent() {
         Ok((
             "\n",
             Line(vec![
-                Token::Indent(Indent(" \t  ")),
+                Token::indent(" \t  "),
                 Token::tag("foo"),
                 Token::Sigspace,
                 Open::Colon.into(),
@@ -386,7 +386,7 @@ fn line_tabs_indent() {
         Ok((
             "\n",
             Line(vec![
-                Token::Indent(Indent("\t")),
+                Token::indent("\t"),
                 Token::tag("foo"),
                 Token::Sigspace,
                 Open::Colon.into(),
@@ -403,7 +403,7 @@ fn line_tab_indent() {
         Ok((
             "\n",
             Line(vec![
-                Token::Indent(Indent("\t\t\t")),
+                Token::indent("\t\t\t"),
                 Token::tag("foo"),
                 Token::Sigspace,
                 Open::Colon.into(),
@@ -419,10 +419,7 @@ fn line_quoted_quotes() {
         line("   \t  \"\\\"Foo\\\"\"\n"),
         Ok((
             "\n",
-            Line(vec![
-                Token::Indent(Indent("   \t  ")),
-                Token::tag("\"Foo\""),
-            ])
+            Line(vec![Token::indent("   \t  "), Token::tag("\"Foo\"")])
         ))
     );
 }
@@ -485,7 +482,7 @@ fn lines_second_indent() {
             "\n",
             vec![
                 Line(vec![Token::tag("root")]),
-                Line(vec![Token::Indent(Indent("\t\t")), Token::tag("indent")]),
+                Line(vec![Token::indent("\t\t"), Token::tag("indent")]),
             ]
         ))
     );
@@ -500,7 +497,7 @@ fn lines_initial_blank() {
             vec![
                 Line(vec![]),
                 Line(vec![Token::tag("root")]),
-                Line(vec![Token::Indent(Indent("\t\t")), Token::tag("indent")]),
+                Line(vec![Token::indent("\t\t"), Token::tag("indent")]),
             ]
         ))
     );
@@ -513,9 +510,9 @@ fn lines_initial_just_indent() {
         Ok((
             "\n",
             vec![
-                Line(vec![Token::Indent(Indent("  "))]),
+                Line(vec![Token::indent("  ")]),
                 Line(vec![Token::tag("root")]),
-                Line(vec![Token::Indent(Indent("\t\t")), Token::tag("indent")]),
+                Line(vec![Token::indent("\t\t"), Token::tag("indent")]),
             ]
         ))
     );
@@ -528,9 +525,9 @@ fn lines_initial_just_indent_then_second_indent() {
         Ok((
             "\n",
             vec![
-                Line(vec![Token::Indent(Indent("  "))]),
-                Line(vec![Token::Indent(Indent("  ")), Token::tag("root")]),
-                Line(vec![Token::Indent(Indent("\t\t")), Token::tag("indent")]),
+                Line(vec![Token::indent("  ")]),
+                Line(vec![Token::indent("  "), Token::tag("root")]),
+                Line(vec![Token::indent("\t\t"), Token::tag("indent")]),
             ]
         ))
     );
@@ -544,8 +541,8 @@ fn lines_initial_blank_then_second_indent() {
             "\n",
             vec![
                 Line(vec![]),
-                Line(vec![Token::Indent(Indent("  ")), Token::tag("root")]),
-                Line(vec![Token::Indent(Indent("\t\t")), Token::tag("indent")]),
+                Line(vec![Token::indent("  "), Token::tag("root")]),
+                Line(vec![Token::indent("\t\t"), Token::tag("indent")]),
             ]
         ))
     );
@@ -558,8 +555,8 @@ fn lines_initial_indent() {
         Ok((
             "\n",
             vec![
-                Line(vec![Token::Indent(Indent("  ")), Token::tag("root")]),
-                Line(vec![Token::Indent(Indent("\t\t")), Token::tag("indent")]),
+                Line(vec![Token::indent("  "), Token::tag("root")]),
+                Line(vec![Token::indent("\t\t"), Token::tag("indent")]),
             ]
         ))
     );
@@ -575,8 +572,8 @@ fn lines_multi_blank_initials() {
                 Line(vec![]),
                 Line(vec![]),
                 Line(vec![]),
-                Line(vec![Token::Indent(Indent("  ")), Token::tag("root")]),
-                Line(vec![Token::Indent(Indent("\t\t")), Token::tag("indent")]),
+                Line(vec![Token::indent("  "), Token::tag("root")]),
+                Line(vec![Token::indent("\t\t"), Token::tag("indent")]),
             ]
         ))
     );
