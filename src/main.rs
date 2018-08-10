@@ -77,7 +77,7 @@ named!(newline<&str, &str>, is_a!(NEWLINE));
 named!(spacing<&str, &str>, is_a!(SPACING));
 
 named!(simple_tag<&str, Tag>, map!(
-    is_not!(" \t\r\n\":("),
+    is_not!(" \t\r\n\":()"),
     |tag| Tag(tag.into())
 ));
 
@@ -160,7 +160,4 @@ named!(pub lines<&str, Vec<Line> >, map!(do_parse!(
     lines
 }));
 
-fn main() {
-    println!("open close {:?}", line("foo(bar) baz\n"));
-    println!("open close {:?}", line("foo (bar) baz\n"));
-}
+fn main() {}

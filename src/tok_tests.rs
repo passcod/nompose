@@ -154,7 +154,23 @@ fn line_quoted_colon() {
 }
 
 #[test]
-fn line_quoted_paren() {
+fn line_quoted_open_paren() {
+    assert_eq!(
+        line("foo bar: \"baz( qux\"\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("foo"),
+                Token::tag("bar"),
+                Open::Colon.into(),
+                Token::tag("baz( qux"),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn line_quoted_close_paren() {
     assert_eq!(
         line("foo bar: \"baz) qux\"\n"),
         Ok((
@@ -185,7 +201,6 @@ fn line_open_paren() {
 }
 
 #[test]
-#[ignore = "FIXME should pass"]
 fn line_open_close() {
     assert_eq!(
         line("foo(bar) baz\n"),
@@ -203,7 +218,6 @@ fn line_open_close() {
 }
 
 #[test]
-#[ignore = "FIXME should pass"]
 fn line_open_close_sigspace() {
     assert_eq!(
         line("foo (bar) baz\n"),
@@ -216,6 +230,65 @@ fn line_open_close_sigspace() {
                 Token::tag("bar"),
                 Close::Paren.into(),
                 Token::tag("baz"),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn line_open_close_two_tags() {
+    assert_eq!(
+        line("foo (bar baz) qux\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("foo"),
+                Token::Sigspace,
+                Open::Paren.into(),
+                Token::tag("bar"),
+                Token::tag("baz"),
+                Close::Paren.into(),
+                Token::tag("qux"),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn line_open_close_two_tags_last_space() {
+    assert_eq!(
+        line("foo (bar baz ) qux\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("foo"),
+                Token::Sigspace,
+                Open::Paren.into(),
+                Token::tag("bar"),
+                Token::tag("baz"),
+                Token::Sigspace,
+                Close::Paren.into(),
+                Token::tag("qux"),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn line_open_close_two_tags_last_nospace_after() {
+    assert_eq!(
+        line("foo (bar baz )qux\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("foo"),
+                Token::Sigspace,
+                Open::Paren.into(),
+                Token::tag("bar"),
+                Token::tag("baz"),
+                Token::Sigspace,
+                Close::Paren.into(),
+                Token::tag("qux"),
             ])
         ))
     );
