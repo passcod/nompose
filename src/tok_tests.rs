@@ -1,7 +1,7 @@
 use super::*;
 
 #[test]
-fn tok_simple_tag() {
+fn simple_tag_partial_read() {
     assert_eq!(
         simple_tag("Hello, world!"),
         Ok((" world!", Tag("Hello,".into())))
@@ -9,7 +9,7 @@ fn tok_simple_tag() {
 }
 
 #[test]
-fn tok_escaped() {
+fn escaped() {
     assert_eq!(
         escaped_tag("Foo\\\"bar \\\\baz \n"),
         Ok(("\n", Tag("Foo\"bar \\baz ".into())))
@@ -17,7 +17,7 @@ fn tok_escaped() {
 }
 
 #[test]
-fn tok_quoted() {
+fn quoted() {
     assert_eq!(
         quoted_tag("\"Foo\\\"bar \\\\baz \"\n"),
         Ok(("\n", Tag("Foo\"bar \\baz ".into())))
@@ -25,12 +25,12 @@ fn tok_quoted() {
 }
 
 #[test]
-fn tok_multitag_1() {
+fn multitag_1() {
     assert_eq!(multitag("a\n"), Ok(("\n", vec![Tag("a".into())])));
 }
 
 #[test]
-fn tok_multitag_2() {
+fn multitag_2() {
     assert_eq!(
         multitag("\"ash\"neo\n"),
         Ok(("\n", vec![Tag("ash".into()), Tag("neo".into())]))
@@ -38,7 +38,7 @@ fn tok_multitag_2() {
 }
 
 #[test]
-fn tok_multitag_3() {
+fn multitag_3() {
     assert_eq!(
         multitag("\"ash\" neo pun\n"),
         Ok((
@@ -49,7 +49,7 @@ fn tok_multitag_3() {
 }
 
 #[test]
-fn tok_multitag_4() {
+fn multitag_4() {
     assert_eq!(
         multitag("\"ash\" neo pun \"back\\\"slash\"\n"),
         Ok((
@@ -65,27 +65,27 @@ fn tok_multitag_4() {
 }
 
 #[test]
-fn tok_open_paren() {
+fn open_paren() {
     assert_eq!(open("("), Ok(("", Open::Paren)));
 }
 
 #[test]
-fn tok_open_colon() {
+fn open_colon() {
     assert_eq!(open(":"), Ok(("", Open::Colon)));
 }
 
 #[test]
-fn tok_close_paren() {
+fn close_paren() {
     assert_eq!(close(")"), Ok(("", Close::Paren)));
 }
 
 #[test]
-fn tok_line_single() {
+fn line_single() {
     assert_eq!(line("foo\n"), Ok(("\n", Line(vec![Token::tag("foo")]))));
 }
 
 #[test]
-fn tok_line_multi() {
+fn line_multi() {
     assert_eq!(
         line("foo bar baz\n"),
         Ok((
@@ -100,7 +100,7 @@ fn tok_line_multi() {
 }
 
 #[test]
-fn tok_line_colon() {
+fn line_colon() {
     assert_eq!(
         line("foo:\n"),
         Ok(("\n", Line(vec![Token::tag("foo"), Open::Colon.into()])))
@@ -108,7 +108,7 @@ fn tok_line_colon() {
 }
 
 #[test]
-fn tok_line_colon_multi() {
+fn line_colon_multi() {
     assert_eq!(
         line("foo: bar\n"),
         Ok((
@@ -123,7 +123,7 @@ fn tok_line_colon_multi() {
 }
 
 #[test]
-fn tok_line_trailing_colon() {
+fn line_trailing_colon() {
     assert_eq!(
         line("foo bar:\n"),
         Ok((
@@ -138,7 +138,7 @@ fn tok_line_trailing_colon() {
 }
 
 #[test]
-fn tok_line_quoted_colon() {
+fn line_quoted_colon() {
     assert_eq!(
         line("foo bar: \"baz: qux\"\n"),
         Ok((
@@ -154,7 +154,7 @@ fn tok_line_quoted_colon() {
 }
 
 #[test]
-fn tok_line_quoted_paren() {
+fn line_quoted_paren() {
     assert_eq!(
         line("foo bar: \"baz) qux\"\n"),
         Ok((
@@ -170,7 +170,7 @@ fn tok_line_quoted_paren() {
 }
 
 #[test]
-fn tok_line_open_paren() {
+fn line_open_paren() {
     assert_eq!(
         line("foo(bar\n"),
         Ok((
@@ -186,7 +186,7 @@ fn tok_line_open_paren() {
 
 #[test]
 #[ignore = "FIXME should pass"]
-fn tok_line_open_close() {
+fn line_open_close() {
     assert_eq!(
         line("foo(bar) baz\n"),
         Ok((
@@ -204,7 +204,7 @@ fn tok_line_open_close() {
 
 #[test]
 #[ignore = "FIXME should pass"]
-fn tok_line_open_close_sigspace() {
+fn line_open_close_sigspace() {
     assert_eq!(
         line("foo (bar) baz\n"),
         Ok((
@@ -222,7 +222,7 @@ fn tok_line_open_close_sigspace() {
 }
 
 #[test]
-fn tok_line_sigspace_two_opens_quoted_paren() {
+fn line_sigspace_two_opens_quoted_paren() {
     assert_eq!(
         line("foo (bar: \"baz) qux\"\n"),
         Ok((
@@ -240,7 +240,7 @@ fn tok_line_sigspace_two_opens_quoted_paren() {
 }
 
 #[test]
-fn tok_line_sigspace_leading_colon() {
+fn line_sigspace_leading_colon() {
     assert_eq!(
         line("foo :bar\n"),
         Ok((
@@ -256,7 +256,7 @@ fn tok_line_sigspace_leading_colon() {
 }
 
 #[test]
-fn tok_line_space_indent() {
+fn line_space_indent() {
     assert_eq!(
         line(" foo :bar\n"),
         Ok((
@@ -273,7 +273,7 @@ fn tok_line_space_indent() {
 }
 
 #[test]
-fn tok_line_spaces_indent() {
+fn line_spaces_indent() {
     assert_eq!(
         line("   foo :bar\n"),
         Ok((
@@ -290,7 +290,7 @@ fn tok_line_spaces_indent() {
 }
 
 #[test]
-fn tok_line_mixed_indent() {
+fn line_mixed_indent() {
     assert_eq!(
         line(" \t  foo :bar\n"),
         Ok((
@@ -307,7 +307,7 @@ fn tok_line_mixed_indent() {
 }
 
 #[test]
-fn tok_line_tabs_indent() {
+fn line_tabs_indent() {
     assert_eq!(
         line("\tfoo :bar\n"),
         Ok((
@@ -324,7 +324,7 @@ fn tok_line_tabs_indent() {
 }
 
 #[test]
-fn tok_line_tab_indent() {
+fn line_tab_indent() {
     assert_eq!(
         line("\t\t\tfoo :bar\n"),
         Ok((
@@ -341,7 +341,7 @@ fn tok_line_tab_indent() {
 }
 
 #[test]
-fn tok_line_quoted_quotes() {
+fn line_quoted_quotes() {
     assert_eq!(
         line("   \t  \"\\\"Foo\\\"\"\n"),
         Ok((
@@ -355,7 +355,7 @@ fn tok_line_quoted_quotes() {
 }
 
 #[test]
-fn tok_lines_triple() {
+fn lines_triple() {
     assert_eq!(
         lines("foo\nbar\nbaz\n"),
         Ok((
@@ -370,12 +370,12 @@ fn tok_lines_triple() {
 }
 
 #[test]
-fn tok_lines_char() {
+fn lines_char() {
     assert_eq!(lines("1\n"), Ok(("\n", vec![Line(vec![Token::tag("1")])])));
 }
 
 #[test]
-fn tok_lines_single() {
+fn lines_single() {
     assert_eq!(
         lines("one\n"),
         Ok(("\n", vec![Line(vec![Token::tag("one")])]))
@@ -383,7 +383,7 @@ fn tok_lines_single() {
 }
 
 #[test]
-fn tok_lines_single_two() {
+fn lines_single_two() {
     assert_eq!(
         lines("tw o\n"),
         Ok(("\n", vec![Line(vec![Token::tag("tw"), Token::tag("o")])]))
@@ -391,7 +391,7 @@ fn tok_lines_single_two() {
 }
 
 #[test]
-fn tok_lines_double_two() {
+fn lines_double_two() {
     assert_eq!(
         lines("th r\nee\n"),
         Ok((
@@ -405,7 +405,7 @@ fn tok_lines_double_two() {
 }
 
 #[test]
-fn tok_lines_second_indent() {
+fn lines_second_indent() {
     assert_eq!(
         lines("root\n\t\tindent\n"),
         Ok((
@@ -419,7 +419,7 @@ fn tok_lines_second_indent() {
 }
 
 #[test]
-fn tok_lines_initial_blank() {
+fn lines_initial_blank() {
     assert_eq!(
         lines("\nroot\n\t\tindent\n"),
         Ok((
@@ -434,7 +434,7 @@ fn tok_lines_initial_blank() {
 }
 
 #[test]
-fn tok_lines_initial_just_indent() {
+fn lines_initial_just_indent() {
     assert_eq!(
         lines("  \nroot\n\t\tindent\n"),
         Ok((
@@ -449,7 +449,7 @@ fn tok_lines_initial_just_indent() {
 }
 
 #[test]
-fn tok_lines_initial_just_indent_then_second_indent() {
+fn lines_initial_just_indent_then_second_indent() {
     assert_eq!(
         lines("  \n  root\n\t\tindent\n"),
         Ok((
@@ -464,7 +464,7 @@ fn tok_lines_initial_just_indent_then_second_indent() {
 }
 
 #[test]
-fn tok_lines_initial_blank_then_second_indent() {
+fn lines_initial_blank_then_second_indent() {
     assert_eq!(
         lines("\n  root\n\t\tindent\n"),
         Ok((
@@ -479,7 +479,7 @@ fn tok_lines_initial_blank_then_second_indent() {
 }
 
 #[test]
-fn tok_lines_initial_indent() {
+fn lines_initial_indent() {
     assert_eq!(
         lines("  root\n\t\tindent\n"),
         Ok((
@@ -493,7 +493,7 @@ fn tok_lines_initial_indent() {
 }
 
 #[test]
-fn tok_lines_multi_blank_initials() {
+fn lines_multi_blank_initials() {
     assert_eq!(
         lines("\n\n\n  root\n\t\tindent\n"),
         Ok((
@@ -510,7 +510,7 @@ fn tok_lines_multi_blank_initials() {
 }
 
 #[test]
-fn tok_newlines_lf() {
+fn newlines_lf() {
     assert_eq!(
         lines("a\nb\n"),
         Ok((
@@ -521,7 +521,7 @@ fn tok_newlines_lf() {
 }
 
 #[test]
-fn tok_newlines_cr() {
+fn newlines_cr() {
     assert_eq!(
         lines("a\rb\r"),
         Ok((
@@ -532,7 +532,7 @@ fn tok_newlines_cr() {
 }
 
 #[test]
-fn tok_newlines_crlf() {
+fn newlines_crlf() {
     assert_eq!(
         lines("a\r\nb\r\n"),
         Ok((
@@ -543,7 +543,7 @@ fn tok_newlines_crlf() {
 }
 
 #[test]
-fn tok_newlines_lfcr() {
+fn newlines_lfcr() {
     assert_eq!(
         lines("a\n\rb\n\r"),
         Ok((
