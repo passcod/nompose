@@ -425,6 +425,36 @@ fn line_quoted_quotes() {
 }
 
 #[test]
+fn bare_escaped_tags() {
+    assert_eq!(
+        line("foo\\\\bar baz\\\"qux\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("foo\\bar"),
+                Token::tag("baz\"qux"),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn all_tag_forms() {
+    assert_eq!(
+        line("foo \"bar \" baz\\\"qux \"zooo\\\\oool\"\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("foo"),
+                Token::tag("bar "),
+                Token::tag("baz\"qux"),
+                Token::tag("zooo\\oool"),
+            ])
+        ))
+    );
+}
+
+#[test]
 fn lines_triple() {
     assert_eq!(
         lines("foo\nbar\nbaz\n"),
