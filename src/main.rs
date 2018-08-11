@@ -4,6 +4,7 @@
 #[macro_use]
 extern crate nom;
 use nom::Needed;
+use std::fmt;
 
 #[cfg(test)]
 mod tok_tests;
@@ -19,6 +20,12 @@ pub struct Indent<'a>(&'a str);
 
 #[derive(Clone, Debug, Default, PartialEq, PartialOrd, Eq, Ord)]
 pub struct Tag(String);
+
+impl fmt::Display for Tag {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.0.fmt(f)
+    }
+}
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Eq, Ord)]
 pub enum Open {
@@ -114,11 +121,10 @@ named!(bare_escaped_tag_with_starting_escape<&str, Tag>, map!(
     do_parse!(
         tag!("\\") >>
         escape: one_of!("\"\\") >>
-        first: none_of!(BARE_ESCAPED_NOTS) >>
-        rest: bare_escaped_str >>
-        (escape, first, rest)
+        rest: opt!(alt!(bare_escaped_tag | bare_escaped_tag_with_starting_escape)) >>
+        (escape, rest)
     ),
-    |(escape, first, rest)| Tag(format!("{}{}{}", escape, first, rest))
+    |(escape, rest)| Tag(format!("{}{}", escape, rest.unwrap_or_else(|| Tag("".into()))))
 ));
 
 named!(quoted_tag<&str, Tag>, delimited!(
