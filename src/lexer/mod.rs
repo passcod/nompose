@@ -206,6 +206,8 @@ pub fn lex(input: &str) -> Result<Vec<Line>, nom::Err<&str>> {
     }
 
     let (rest, done) = termpose(input)?;
-    if rest != "\n" { unreachable!() }
+    if rest != "\n" {
+        unreachable!()
+    }
     Ok(done)
 }

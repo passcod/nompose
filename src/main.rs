@@ -21,7 +21,9 @@ pub struct Node {
 
 impl Node {
     pub fn new(name: String, indent: String, line: usize, size: usize) -> Self {
-        if line == 0 { panic!("Tried to manually create the root node"); }
+        if line == 0 {
+            panic!("Tried to manually create the root node");
+        }
         Self {
             name,
             indent,
@@ -47,12 +49,15 @@ impl Default for Node {
 }
 
 #[derive(Clone, Default)]
+#[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
 pub struct Protonode(Arc<RwLock<(Node, Vec<Protonode>, Option<Protonode>)>>);
 // This node, children nodes, parent node
 
 impl Protonode {
-    fn new(node: Node, parent: Protonode) -> Self {
-        if node.is_root() { panic!("Tried to add root node down the tree") }
+    fn new(node: Node, parent: Self) -> Self {
+        if node.is_root() {
+            panic!("Tried to add root node down the tree")
+        }
         Protonode(Arc::new(RwLock::new((node, vec![], Some(parent)))))
     }
 
@@ -63,7 +68,9 @@ impl Protonode {
 
     pub fn step_in(&mut self) -> Self {
         let proto = self.0.read().unwrap();
-        if proto.1.is_empty() { panic!("Tried to step into nothing") }
+        if proto.1.is_empty() {
+            panic!("Tried to step into nothing")
+        }
         proto.1.last().unwrap().clone()
     }
 
@@ -94,15 +101,17 @@ pub struct Termpose {
 
 impl Termpose {
     /// Create a new Termpose and start it off from a string
-    pub fn from_str(input: &str) -> Result<Self, nom::Err<&str>> {
-        let mut pose = Termpose::default();
+    pub fn new_from_str(input: &str) -> Result<Self, nom::Err<&str>> {
+        let mut pose = Self::default();
         pose.load_str(input)?;
         Ok(pose)
     }
 
     /// Lex a string and load it in
     pub fn load_str<'lex>(&mut self, input: &'lex str) -> Result<(), nom::Err<&'lex str>> {
-        if self.rewound { panic!("rewound") }
+        if self.rewound {
+            panic!("rewound")
+        }
 
         self.load(lex(input)?);
         Ok(())
@@ -110,7 +119,9 @@ impl Termpose {
 
     /// Load a list of lexed Lines
     pub fn load(&mut self, toks: Vec<Line>) {
-        if self.rewound { panic!("rewound") }
+        if self.rewound {
+            panic!("rewound")
+        }
 
         for tok in toks {
             self.tokens.push(tok);
@@ -118,15 +129,20 @@ impl Termpose {
     }
 
     fn step_in(&mut self) {
-        if self.rewound { panic!("rewound") }
+        if self.rewound {
+            panic!("rewound")
+        }
 
         self.node = self.node.step_in();
     }
 
     fn step_out(&mut self) -> bool {
         match self.node.step_out() {
-            Some(n) => { self.node = n; true },
-            None => false
+            Some(n) => {
+                self.node = n;
+                true
+            }
+            None => false,
         }
     }
 
@@ -142,12 +158,15 @@ impl Termpose {
 
     /// Process one Line
     pub fn turn(&mut self) -> Result<(), String> {
-        if self.rewound { panic!("rewound") }
+        if self.rewound {
+            panic!("rewound")
+        }
 
         if self.current_line >= self.tokens.len() {
             return Err("at the end of the road".into());
         }
 
+        #[cfg_attr(feature = "cargo-clippy", allow(indexing_slicing))]
         let line = self.tokens[self.current_line].clone();
         self.current_line += 1;
 
@@ -170,11 +189,11 @@ impl Termpose {
                             return Err("wrong indent despite being at same level".into());
                         }
                     }
-                },
+                }
                 Token::Open(_) => {
                     self.indent_stack.push("".into());
                     self.step_in();
-                },
+                }
                 Token::Close(_) => {
                     if let Some(peek) = self.indent_stack.last() {
                         if peek != "" {
@@ -186,13 +205,16 @@ impl Termpose {
 
                     self.indent_stack.pop();
                     self.step_out();
-                },
+                }
                 Token::Tag(t) => {
                     self.node.add_node(Node::new(
                         t.0.clone(),
-                        self.indent_stack.last().map(|i| i.clone()).unwrap_or("".into()),
+                        self.indent_stack
+                            .last()
+                            .cloned()
+                            .unwrap_or_else(|| "".into()),
                         self.current_line,
-                        0
+                        0,
                     ));
                 }
                 _ => {}
@@ -204,7 +226,7 @@ impl Termpose {
 }
 
 fn main() {
-    let mut pose = Termpose::from_str("a\n b\n c\n").unwrap();
+    let mut pose = Termpose::new_from_str("a\n b\n c\n").unwrap();
     println!("\n\n{:#?}", pose.node);
     pose.turn().unwrap();
     println!("\n\n{:#?}", pose.node);

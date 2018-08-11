@@ -1133,8 +1133,7 @@ fn lex_missing_trailing_newline() {
 #[test]
 fn lex_example() {
     assert_eq!(
-        lex(
-            "
+        lex("
 mon
   name leafward
   affinity creation
@@ -1150,8 +1149,7 @@ mon
     move
     strike drain:2 damage:standard:2
     bomb drain:3 effect:heal:standard:2 grenadeTimer:2 grenadeHealth:20 range:2 radius:2
-"
-        ),
+"),
         Ok(vec![
             Line(vec![]),
             Line(vec![Token::tag("mon")]),
