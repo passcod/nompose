@@ -4,8 +4,8 @@ use std::fmt;
 #[cfg(test)]
 mod tests;
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd, Eq, Ord)]
-pub struct Indent<'a>(&'a str);
+#[derive(Clone, Debug, Default, PartialEq, PartialOrd, Eq, Ord)]
+pub struct Indent(String);
 
 #[derive(Clone, Debug, Default, PartialEq, PartialOrd, Eq, Ord)]
 pub struct Tag(String);
@@ -29,17 +29,17 @@ pub enum Close {
 }
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Eq, Ord)]
-pub enum Token<'a> {
-    Indent(Indent<'a>),
+pub enum Token {
+    Indent(Indent),
     Tag(Tag),
     Open(Open),
     Close(Close),
     Sigspace,
 }
 
-impl<'a> Token<'a> {
-    pub fn indent(i: &'a str) -> Self {
-        Token::Indent(Indent(i))
+impl Token {
+    pub fn indent(i: &str) -> Self {
+        Indent(i.into()).into()
     }
 
     #[cfg(test)]
@@ -48,26 +48,32 @@ impl<'a> Token<'a> {
     }
 }
 
-impl<'a> From<Tag> for Token<'a> {
+impl From<Indent> for Token {
+    fn from(i: Indent) -> Self {
+        Token::Indent(i)
+    }
+}
+
+impl From<Tag> for Token {
     fn from(tag: Tag) -> Self {
         Token::Tag(tag)
     }
 }
 
-impl<'a> From<Open> for Token<'a> {
+impl From<Open> for Token {
     fn from(o: Open) -> Self {
         Token::Open(o)
     }
 }
 
-impl<'a> From<Close> for Token<'a> {
+impl From<Close> for Token {
     fn from(c: Close) -> Self {
         Token::Close(c)
     }
 }
 
 #[derive(Clone, Debug, Default, PartialEq, PartialOrd, Eq, Ord)]
-pub struct Line<'a>(Vec<Token<'a>>);
+pub struct Line(Vec<Token>);
 
 const NEWLINE: &str = "\r\n";
 const SPACING: &str = " \t";
