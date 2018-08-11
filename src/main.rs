@@ -95,21 +95,19 @@ named!(simple_tag<&str, Tag>, map!(
 
 named!(escaped_tag_inner<&str, &str>, alt!(complete!(is_not!("\"\\\r\n")) | eof!()));
 named!(escaped_tag<&str, Tag>, map!(
-    escaped_transform!(call!(escaped_tag_inner), '\\', alt!(
-        tag!("\\") => { |_| "\\" } |
-        tag!("\"") => { |_| "\"" } |
-        tag!("h") => { |_| "☃" }
-    )),
+    escaped_transform!(call!(escaped_tag_inner), '\\', escapes),
     Tag
+));
+
+named!(escapes<&str, &str>, alt!(
+    tag!("\\") => { |_| "\\" } |
+    tag!("\"") => { |_| "\"" } |
+    tag!("h") => { |_| "☃" }
 ));
 
 const BARE_ESCAPED_NOTS: &str = " \t\r\n\"\\:()";
 named!(bare_escaped_tag_inner<&str, &str>, alt!(complete!(is_not!(" \t\r\n\"\\:()")) | eof!()));
-named!(bare_escaped_str<&str, String>, escaped_transform!(call!(bare_escaped_tag_inner), '\\', alt!(
-    tag!("\\") => { |_| "\\" } |
-    tag!("\"") => { |_| "\"" } |
-    tag!("h") => { |_| "☃" }
-)));
+named!(bare_escaped_str<&str, String>, escaped_transform!(call!(bare_escaped_tag_inner), '\\', escapes));
 
 named!(bare_escaped_tag<&str, Tag>, map!(
     do_parse!(
