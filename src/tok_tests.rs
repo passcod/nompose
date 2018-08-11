@@ -425,15 +425,17 @@ fn line_quoted_quotes() {
 }
 
 #[test]
+fn empty_tag() {
+    assert_eq!(line("\"\"\n"), Ok(("\n", Line(vec![Token::tag("")]))));
+}
+
+#[test]
 fn bare_escaped_tags() {
     assert_eq!(
         line("foo\\\\bar baz\\\"qux\n"),
         Ok((
             "\n",
-            Line(vec![
-                Token::tag("foo\\bar"),
-                Token::tag("baz\"qux"),
-            ])
+            Line(vec![Token::tag("foo\\bar"), Token::tag("baz\"qux")])
         ))
     );
 }
