@@ -465,6 +465,23 @@ fn bare_escaped_tag_with_only_escapes() {
 }
 
 #[test]
+fn snowmen() {
+    assert_eq!(
+        line("snow!!!\\h \\h \"☃\" \"\\h\" ☃\\h\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("snow!!!☃"),
+                Token::tag("☃"),
+                Token::tag("☃"),
+                Token::tag("☃"),
+                Token::tag("☃☃"),
+            ])
+        ))
+    );
+}
+
+#[test]
 fn all_tag_forms() {
     assert_eq!(
         line("foo \"bar \" baz\\\"qux \"zooo\\\\oool\"\n"),

@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 #![cfg_attr(feature = "cargo-clippy", deny(clippy, clippy_pedantic))]
+#![cfg_attr(feature = "cargo-clippy", allow(non_ascii_literal))]
 
 #[macro_use]
 extern crate nom;
@@ -96,7 +97,8 @@ named!(escaped_tag_inner<&str, &str>, alt!(complete!(is_not!("\"\\\r\n")) | eof!
 named!(escaped_tag<&str, Tag>, map!(
     escaped_transform!(call!(escaped_tag_inner), '\\', alt!(
         tag!("\\") => { |_| "\\" } |
-        tag!("\"") => { |_| "\"" }
+        tag!("\"") => { |_| "\"" } |
+        tag!("h") => { |_| "☃" }
     )),
     Tag
 ));
@@ -105,7 +107,8 @@ const BARE_ESCAPED_NOTS: &str = " \t\r\n\"\\:()";
 named!(bare_escaped_tag_inner<&str, &str>, alt!(complete!(is_not!(" \t\r\n\"\\:()")) | eof!()));
 named!(bare_escaped_str<&str, String>, escaped_transform!(call!(bare_escaped_tag_inner), '\\', alt!(
     tag!("\\") => { |_| "\\" } |
-    tag!("\"") => { |_| "\"" }
+    tag!("\"") => { |_| "\"" } |
+    tag!("h") => { |_| "☃" }
 )));
 
 named!(bare_escaped_tag<&str, Tag>, map!(
@@ -120,11 +123,14 @@ named!(bare_escaped_tag<&str, Tag>, map!(
 named!(bare_escaped_tag_with_starting_escape<&str, Tag>, map!(
     do_parse!(
         tag!("\\") >>
-        escape: one_of!("\"\\") >>
+        escape: one_of!("\"\\h") >>
         rest: opt!(alt!(bare_escaped_tag | bare_escaped_tag_with_starting_escape)) >>
         (escape, rest)
     ),
-    |(escape, rest)| Tag(format!("{}{}", escape, rest.unwrap_or_else(|| Tag("".into()))))
+    |(escape, rest)| Tag(format!("{}{}", match escape {
+        'h' => '☃',
+        s => s
+    }, rest.unwrap_or_else(|| Tag("".into()))))
 ));
 
 named!(quoted_tag<&str, Tag>, delimited!(
