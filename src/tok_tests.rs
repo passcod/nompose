@@ -441,6 +441,14 @@ fn bare_escaped_tags() {
 }
 
 #[test]
+fn bare_escaped_tag_with_starting_escape() {
+    assert_eq!(
+        line("foo \\\"bar\n"),
+        Ok(("\n", Line(vec![Token::tag("foo"), Token::tag("\"bar")])))
+    );
+}
+
+#[test]
 fn all_tag_forms() {
     assert_eq!(
         line("foo \"bar \" baz\\\"qux \"zooo\\\\oool\"\n"),

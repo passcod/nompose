@@ -95,7 +95,7 @@ named!(escaped_tag<&str, Tag>, map!(
 ));
 
 const BARE_ESCAPED_NOTS: &str = " \t\r\n\"\\:()";
-named!(bare_escaped_tag_inner<&str, &str>, alt!(complete!(is_not!(BARE_ESCAPED_NOTS)) | eof!()));
+named!(bare_escaped_tag_inner<&str, &str>, alt!(complete!(is_not!(" \t\r\n\"\\:()")) | eof!()));
 named!(bare_escaped_str<&str, String>, escaped_transform!(call!(bare_escaped_tag_inner), '\\', alt!(
     tag!("\\") => { |_| "\\" } |
     tag!("\"") => { |_| "\"" }
@@ -110,13 +110,29 @@ named!(bare_escaped_tag<&str, Tag>, map!(
     |(first, rest)| Tag(format!("{}{}", first, rest))
 ));
 
+named!(bare_escaped_tag_with_starting_escape<&str, Tag>, map!(
+    do_parse!(
+        tag!("\\") >>
+        escape: one_of!("\"\\") >>
+        first: none_of!(BARE_ESCAPED_NOTS) >>
+        rest: bare_escaped_str >>
+        (escape, first, rest)
+    ),
+    |(escape, first, rest)| Tag(format!("{}{}{}", escape, first, rest))
+));
+
 named!(quoted_tag<&str, Tag>, delimited!(
     tag!("\""),
     escaped_tag,
     tag!("\"")
 ));
 
-named!(a_tag<&str, Tag>, alt!(quoted_tag | bare_escaped_tag | simple_tag));
+named!(a_tag<&str, Tag>, alt!(
+    quoted_tag |
+    bare_escaped_tag_with_starting_escape |
+    bare_escaped_tag |
+    simple_tag
+));
 
 named!(multitag<&str, Vec<Tag> >, many1!(do_parse!(
     eat_separator!(SPACING) >>
