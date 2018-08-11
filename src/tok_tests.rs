@@ -498,6 +498,280 @@ fn all_tag_forms() {
 }
 
 #[test]
+fn only_parens() {
+    assert_eq!(
+        line("((()))\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Open::Paren.into(),
+                Open::Paren.into(),
+                Open::Paren.into(),
+                Close::Paren.into(),
+                Close::Paren.into(),
+                Close::Paren.into(),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn only_parens_imbalance() {
+    assert_eq!(
+        line("((())\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Open::Paren.into(),
+                Open::Paren.into(),
+                Open::Paren.into(),
+                Close::Paren.into(),
+                Close::Paren.into(),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn only_colons() {
+    assert_eq!(
+        line(":::\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Open::Colon.into(),
+                Open::Colon.into(),
+                Open::Colon.into(),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn only_colons_in_parens() {
+    assert_eq!(
+        line("(::)\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Open::Paren.into(),
+                Open::Colon.into(),
+                Open::Colon.into(),
+                Close::Paren.into(),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn colons_between_tags() {
+    assert_eq!(
+        line("a:::b\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("a"),
+                Open::Colon.into(),
+                Open::Colon.into(),
+                Open::Colon.into(),
+                Token::tag("b"),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn colons_in_parens_between_tags() {
+    assert_eq!(
+        line("a(b::c)d\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("a"),
+                Open::Paren.into(),
+                Token::tag("b"),
+                Open::Colon.into(),
+                Open::Colon.into(),
+                Token::tag("c"),
+                Close::Paren.into(),
+                Token::tag("d"),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn colon_alone_between_tags() {
+    assert_eq!(
+        line("ne ne : ne\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("ne"),
+                Token::tag("ne"),
+                Token::Sigspace,
+                Open::Colon.into(),
+                Token::tag("ne"),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn nested_parens() {
+    assert_eq!(
+        line("(ne (ne ne))\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Open::Paren.into(),
+                Token::tag("ne"),
+                Token::Sigspace,
+                Open::Paren.into(),
+                Token::tag("ne"),
+                Token::tag("ne"),
+                Close::Paren.into(),
+                Close::Paren.into(),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn equal_indent() {
+    assert_eq!(
+        lines("\ta\n\t\tb\n\t\tc\n"),
+        Ok((
+            "\n",
+            vec![
+                Line(vec![Token::indent("\t"), Token::tag("a")]),
+                Line(vec![Token::indent("\t\t"), Token::tag("b")]),
+                Line(vec![Token::indent("\t\t"), Token::tag("c")]),
+            ]
+        ))
+    );
+}
+
+#[test]
+fn many_open_parens() {
+    assert_eq!(
+        lines(
+            "
+-
+    A(B(C(D(E
+    N(M(E
+- (A (B (C (D E)))) (N (M E))
+"
+        ),
+        Ok((
+            "\n",
+            vec![
+                Line(vec![]),
+                Line(vec![Token::tag("-")]),
+                Line(vec![
+                    Token::indent("    "),
+                    Token::tag("A"),
+                    Open::Paren.into(),
+                    Token::tag("B"),
+                    Open::Paren.into(),
+                    Token::tag("C"),
+                    Open::Paren.into(),
+                    Token::tag("D"),
+                    Open::Paren.into(),
+                    Token::tag("E"),
+                ]),
+                Line(vec![
+                    Token::indent("    "),
+                    Token::tag("N"),
+                    Open::Paren.into(),
+                    Token::tag("M"),
+                    Open::Paren.into(),
+                    Token::tag("E"),
+                ]),
+                Line(vec![
+                    Token::tag("-"),
+                    Token::Sigspace,
+                    Open::Paren.into(),
+                    Token::tag("A"),
+                    Token::Sigspace,
+                    Open::Paren.into(),
+                    Token::tag("B"),
+                    Token::Sigspace,
+                    Open::Paren.into(),
+                    Token::tag("C"),
+                    Token::Sigspace,
+                    Open::Paren.into(),
+                    Token::tag("D"),
+                    Token::tag("E"),
+                    Close::Paren.into(),
+                    Close::Paren.into(),
+                    Close::Paren.into(),
+                    Close::Paren.into(),
+                    Token::Sigspace,
+                    Open::Paren.into(),
+                    Token::tag("N"),
+                    Token::Sigspace,
+                    Open::Paren.into(),
+                    Token::tag("M"),
+                    Token::tag("E"),
+                    Close::Paren.into(),
+                    Close::Paren.into(),
+                ]),
+            ]
+        ))
+    );
+}
+
+#[test]
+fn chained_colons() {
+    assert_eq!(
+        line("a:b:c:d:e\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Token::tag("a"),
+                Open::Colon.into(),
+                Token::tag("b"),
+                Open::Colon.into(),
+                Token::tag("c"),
+                Open::Colon.into(),
+                Token::tag("d"),
+                Open::Colon.into(),
+                Token::tag("e"),
+            ])
+        ))
+    );
+}
+
+#[test]
+fn chained_parens() {
+    assert_eq!(
+        line("(A (B (C (D E))))\n"),
+        Ok((
+            "\n",
+            Line(vec![
+                Open::Paren.into(),
+                Token::tag("A"),
+                Token::Sigspace,
+                Open::Paren.into(),
+                Token::tag("B"),
+                Token::Sigspace,
+                Open::Paren.into(),
+                Token::tag("C"),
+                Token::Sigspace,
+                Open::Paren.into(),
+                Token::tag("D"),
+                Token::tag("E"),
+                Close::Paren.into(),
+                Close::Paren.into(),
+                Close::Paren.into(),
+                Close::Paren.into(),
+            ])
+        ))
+    );
+}
+
+#[test]
 fn lines_triple() {
     assert_eq!(
         lines("foo\nbar\nbaz\n"),
@@ -828,6 +1102,25 @@ fn quoted_tag_and_trailing_quote_and_escapes() {
                 Open::Quote.into(),
                 Token::tag("dash\"rash\\balderdash"),
             ])
+        ))
+    );
+}
+
+#[test]
+fn trailing_quote_and_quote_in_indent() {
+    assert_eq!(
+        lines("open\"\n\thome\"auction\n"),
+        Ok((
+            "\n",
+            vec![
+                Line(vec![Token::tag("open"), Open::Quote.into()]),
+                Line(vec![
+                    Token::indent("\t"),
+                    Token::tag("home"),
+                    Open::Quote.into(),
+                    Token::tag("auction"),
+                ]),
+            ]
         ))
     );
 }
