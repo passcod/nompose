@@ -5,10 +5,10 @@ use std::fmt;
 mod tests;
 
 #[derive(Clone, Debug, Default, PartialEq, PartialOrd, Eq, Ord)]
-pub struct Indent(String);
+pub struct Indent(pub String);
 
 #[derive(Clone, Debug, Default, PartialEq, PartialOrd, Eq, Ord)]
-pub struct Tag(String);
+pub struct Tag(pub String);
 
 impl fmt::Display for Tag {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -73,7 +73,7 @@ impl From<Close> for Token {
 }
 
 #[derive(Clone, Debug, Default, PartialEq, PartialOrd, Eq, Ord)]
-pub struct Line(Vec<Token>);
+pub struct Line(pub Vec<Token>);
 
 const NEWLINE: &str = "\r\n";
 const SPACING: &str = " \t";
