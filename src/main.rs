@@ -121,14 +121,11 @@ named!(bare_escaped_tag<&str, Tag>, map!(
 named!(bare_escaped_tag_with_starting_escape<&str, Tag>, map!(
     do_parse!(
         tag!("\\") >>
-        escape: one_of!("\"\\h") >>
+        escape: escapes >>
         rest: opt!(alt!(bare_escaped_tag | bare_escaped_tag_with_starting_escape)) >>
         (escape, rest)
     ),
-    |(escape, rest)| Tag(format!("{}{}", match escape {
-        'h' => '☃',
-        s => s
-    }, rest.unwrap_or_else(|| Tag("".into()))))
+    |(escape, rest)| Tag(format!("{}{}", escape, rest.unwrap_or_else(|| Tag("".into()))))
 ));
 
 named!(quoted_tag<&str, Tag>, delimited!(
