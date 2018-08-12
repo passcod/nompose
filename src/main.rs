@@ -218,9 +218,9 @@ impl Termpose {
     }
 
     /// Process one Line
-    pub fn turn(&mut self) -> Result<(), String> {
+    pub fn turn(&mut self) -> Result<bool, String> {
         if self.current_line >= self.tokens.len() {
-            return Err("at the end of the road".into());
+            return Ok(false);
         }
 
         #[cfg_attr(feature = "cargo-clippy", allow(indexing_slicing))]
@@ -278,19 +278,20 @@ impl Termpose {
             }
         }
 
-        Ok(())
-    }
+        Ok(true)
+     }
 }
 
 fn main() {
-    let mut pose = Termpose::new_from_str("a\n b\n c\n").unwrap();
-    println!("\n\n{:#?}", pose.node);
-    pose.turn().unwrap();
-    println!("\n\n{:#?}", pose.node);
-    pose.turn().unwrap();
-    println!("\n\n{:#?}", pose.node);
-    pose.turn().unwrap();
-    println!("\n\n{:#?}", pose.node);
-    pose.rewind();
+    let mut pose = Termpose::new_from_str("
+root
+    a lot of alots
+allowed hallows
+    wand
+    cape
+    rock
+").unwrap();
+    while pose.turn().unwrap() {
         println!("{:#?}\n\n", pose.finalise());
+    }
 }
