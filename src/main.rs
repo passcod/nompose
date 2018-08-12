@@ -6,7 +6,7 @@
 extern crate nom;
 
 use lexer::{lex, Line, Token};
-use std::fmt;
+use std::fmt::{self, Debug};
 use std::sync::{Arc, RwLock};
 
 mod lexer;
@@ -20,15 +20,16 @@ pub struct Node {
 }
 
 impl Node {
-    pub fn new(name: String, indent: String, line: usize, size: usize) -> Self {
+    pub fn new(name: String, indent: String, line: usize) -> Self {
         if line == 0 {
             panic!("Tried to manually create the root node");
         }
+
         Self {
             name,
             indent,
             line,
-            children: Vec::with_capacity(size),
+            children: Vec::with_capacity(0),
         }
     }
 
@@ -49,8 +50,59 @@ impl Default for Node {
 }
 
 #[derive(Clone, Default)]
-#[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
-pub struct Protonode(Arc<RwLock<(Node, Vec<Protonode>, Option<Protonode>)>>);
+pub struct Protonodule {
+    node: Node,
+    children: Vec<Protonode>,
+    parent: Option<Protonode>,
+}
+
+impl Protonodule {
+    pub fn new(node: Node, parent: Protonode) -> Self {
+        Self {
+            node,
+            children: vec![],
+            parent: Some(parent),
+        }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.children.is_empty()
+    }
+
+    pub fn last_child(&self) -> Protonode {
+        self.children.last().unwrap().clone()
+    }
+
+    pub fn add_child(&mut self, protonode: Protonode) {
+        self.children.push(protonode);
+    }
+
+    pub fn parent(&self) -> Option<Protonode> {
+        self.parent.clone()
+    }
+
+    pub fn debug(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.fmt(f)
+    }
+
+    pub fn finalise(&self) -> Node {
+        let mut node = self.node.clone();
+        node.children = self.children.iter().map(|p| p.finalise()).collect();
+        node
+    }
+}
+
+impl Debug for Protonodule {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.debug_struct("Protonodule")
+            .field("node", &self.node)
+            .field("children", &self.children)
+            .finish()
+    }
+}
+
+#[derive(Clone, Default)]
+pub struct Protonode(Arc<RwLock<Protonodule>>);
 // This node, children nodes, parent node
 
 impl Protonode {
@@ -58,45 +110,63 @@ impl Protonode {
         if node.is_root() {
             panic!("Tried to add root node down the tree")
         }
-        Protonode(Arc::new(RwLock::new((node, vec![], Some(parent)))))
+
+        Protonode(Arc::new(RwLock::new(Protonodule::new(node, parent))))
     }
 
     pub fn add_node(&mut self, node: Node) {
         let mut proto = self.0.write().unwrap();
-        proto.1.push(Self::new(node, self.clone()));
+        proto.add_child(Self::new(node, self.clone()));
     }
 
-    pub fn step_in(&mut self) -> Self {
+    pub fn child(&self) -> Option<Self> {
         let proto = self.0.read().unwrap();
-        if proto.1.is_empty() {
-            panic!("Tried to step into nothing")
+        if proto.is_empty() {
+            None
+        } else {
+            Some(proto.last_child())
         }
-        proto.1.last().unwrap().clone()
     }
 
-    pub fn step_out(&mut self) -> Option<Self> {
-        self.0.read().unwrap().2.clone()
+    pub fn parent(&self) -> Option<Self> {
+        self.0.read().unwrap().parent()
+    }
+
+    pub fn finalise(&self) -> Node {
+        self.0.read().unwrap().finalise()
+    }
+
+    pub fn is_root(&self) -> bool {
+        self.parent().is_none()
     }
 }
 
-impl fmt::Debug for Protonode {
+impl Debug for Protonode {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let proto = self.0.read().unwrap();
-        f.debug_struct("Protonode")
-            .field("node", &proto.0)
-            .field("children", &proto.1)
-            .finish()
+        self.0.read().unwrap().debug(f)
     }
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Default)]
 pub struct Termpose {
-    tokens: Vec<Line>,
+    pub tokens: Vec<Line>,
     pub node: Protonode,
     current_line: usize,
     indent_stack: Vec<String>,
     multiline_open: bool,
-    rewound: bool,
+    just_stepped_in: bool,
+}
+
+impl Debug for Termpose {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.debug_struct("Termpose")
+            .field("node", &self.node)
+            .field("current_line", &self.current_line)
+            .field("indent_stack", &self.indent_stack)
+            .field("multiline_open", &self.multiline_open)
+            .field("just_stepped_in", &self.just_stepped_in)
+            .finish()
+    }
 }
 
 impl Termpose {
@@ -109,29 +179,18 @@ impl Termpose {
 
     /// Lex a string and load it in
     pub fn load_str<'lex>(&mut self, input: &'lex str) -> Result<(), nom::Err<&'lex str>> {
-        if self.rewound {
-            panic!("rewound")
-        }
-
         self.load(lex(input)?);
         Ok(())
     }
 
     /// Load a list of lexed Lines
     pub fn load(&mut self, toks: Vec<Line>) {
-        if self.rewound {
-            panic!("rewound")
-        }
-
         for tok in toks {
             self.tokens.push(tok);
         }
     }
 
     fn step_in(&mut self) {
-        if self.rewound {
-            panic!("rewound")
-        }
 
         self.node = self.node.step_in();
     }
@@ -150,18 +209,16 @@ impl Termpose {
         self.indent_stack.concat()
     }
 
-    /// If you rewind in the middle of a parse you'll corrupt the state
-    pub fn rewind(&mut self) {
-        self.rewound = true;
+    pub fn finalise(&mut self) -> Node {
+        let curr = self.node.clone();
         while self.step_out() {}
+        let fin = self.node.finalise();
+        self.node = curr;
+        fin
     }
 
     /// Process one Line
     pub fn turn(&mut self) -> Result<(), String> {
-        if self.rewound {
-            panic!("rewound")
-        }
-
         if self.current_line >= self.tokens.len() {
             return Err("at the end of the road".into());
         }
@@ -235,5 +292,5 @@ fn main() {
     pose.turn().unwrap();
     println!("\n\n{:#?}", pose.node);
     pose.rewind();
-    println!("\n\n{:#?}", pose.node);
+        println!("{:#?}\n\n", pose.finalise());
 }
