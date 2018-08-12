@@ -206,7 +206,7 @@ impl Termpose {
     }
 
     fn current_indent(&self) -> String {
-        self.indent_stack.concat()
+        self.indent_stack.last().cloned().unwrap_or_else(|| "".into())
     }
 
     pub fn finalise(&mut self) -> Node {
@@ -233,18 +233,20 @@ impl Termpose {
                     let ci = self.current_indent();
                     if ci != s.0 {
                         if s.0.len() > ci.len() {
-                            // dive
+                            println!("dive");
                             // todo: check that ci is a substring of s.0 (otherwise abort!)
-                            self.indent_stack.push(s.0.clone());
+                            self.indent_stack.push(s.0[ci.len()..].into());
                             self.step_in();
                         } else if s.0.len() < ci.len() {
-                            // rise
+                            println!("rise");
                             // todo: check that s.0 is a substring of ci (otherwise abort!)
                             self.indent_stack.pop();
                             self.step_out();
                         } else {
                             return Err("wrong indent despite being at same level".into());
                         }
+                    } else {
+                        println!("same");
                     }
                 }
                 Token::Open(_) => {
@@ -266,10 +268,7 @@ impl Termpose {
                 Token::Tag(t) => {
                     self.node.add_node(Node::new(
                         t.0.clone(),
-                        self.indent_stack
-                            .last()
-                            .cloned()
-                            .unwrap_or_else(|| "".into()),
+                        self.current_indent(),
                         self.current_line,
                         0,
                     ));
