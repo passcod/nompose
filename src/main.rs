@@ -191,12 +191,16 @@ impl Termpose {
     }
 
     fn step_in(&mut self) {
+        if self.just_stepped_in { return; }
+        self.just_stepped_in = true;
 
-        self.node = self.node.step_in();
+        self.node = self.node.child()
+            .unwrap_or_else(|| panic!("Tried to step into nothing! {:#?}", self));
     }
 
     fn step_out(&mut self) -> bool {
-        match self.node.step_out() {
+        self.just_stepped_in = false;
+        match self.node.parent() {
             Some(n) => {
                 self.node = n;
                 true
@@ -273,6 +277,7 @@ impl Termpose {
                         self.current_line,
                         0,
                     ));
+                    self.just_stepped_in = false;
                 }
                 _ => {}
             }
