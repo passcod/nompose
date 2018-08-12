@@ -164,9 +164,7 @@ named!(line<&str, Line>, map!(do_parse!(
 ), |(i, aroar, trailq)| {
     let mut toks = vec![];
 
-    if !i.is_empty() {
-        toks.push(Token::indent(i));
-    }
+    toks.push(Token::indent(i));
 
     for ar in aroar {
         for tok in ar {
