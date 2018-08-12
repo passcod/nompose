@@ -191,10 +191,14 @@ impl Termpose {
     }
 
     fn step_in(&mut self) {
-        if self.just_stepped_in { return; }
+        if self.just_stepped_in {
+            return;
+        }
         self.just_stepped_in = true;
 
-        self.node = self.node.child()
+        self.node = self
+            .node
+            .child()
             .unwrap_or_else(|| panic!("Tried to step into nothing! {:#?}", self));
     }
 
@@ -210,7 +214,10 @@ impl Termpose {
     }
 
     fn current_indent(&self) -> String {
-        self.indent_stack.last().cloned().unwrap_or_else(|| "".into())
+        self.indent_stack
+            .last()
+            .cloned()
+            .unwrap_or_else(|| "".into())
     }
 
     pub fn finalise(&mut self) -> Node {
@@ -236,10 +243,14 @@ impl Termpose {
         let mut preceding_sigspace = false;
 
         for (i, token) in line.iter().enumerate() {
-            #[cfg(debug_assertions)] {
+            #[cfg(debug_assertions)]
+            {
                 let debug = format!("{:?}", token);
                 let variant = debug.split('(').next().unwrap();
-                println!("[{}/{}]\ttag_i: {},  \tjust_stepped_in: {},  \tprev_sigspace: {} \tprocessing: {}", i, length, tag_i, self.just_stepped_in, preceding_sigspace, variant);
+                println!(
+                    "[{}/{}]\ttag_i: {},  \tjust_stepped_in: {},  \tprev_sigspace: {} \tprocessing: {}",
+                    i, length, tag_i, self.just_stepped_in, preceding_sigspace, variant
+                );
             }
 
             let reset_sigspace = preceding_sigspace;
@@ -250,6 +261,7 @@ impl Termpose {
                         if s.0.len() > ci.len() {
                             println!("dive");
                             // todo: check that ci is a substring of s.0 (otherwise abort!)
+                            #[cfg_attr(feature = "cargo-clippy", allow(indexing_slicing))]
                             self.indent_stack.push(s.0[ci.len()..].into());
                             self.step_in();
                         } else if s.0.len() < ci.len() {
@@ -260,8 +272,6 @@ impl Termpose {
                         } else {
                             return Err("wrong indent despite being at same level".into());
                         }
-                    } else {
-                        println!("same");
                     }
                 }
                 Token::Open(_) => {
@@ -283,18 +293,14 @@ impl Termpose {
                 Token::Tag(t) => {
                     tag_i += 1;
 
-                    let node = Node::new(
-                        t.0.clone(),
-                        self.current_indent(),
-                        self.current_line,
-                    );
+                    let node = Node::new(t.0.clone(), self.current_indent(), self.current_line);
 
+                    self.just_stepped_in = false;
                     if tag_i == 2 {
                         self.step_in();
                     }
 
                     self.node.add_node(node);
-                    self.just_stepped_in = false;
                 }
                 Token::Sigspace => {
                     preceding_sigspace = true;
@@ -307,20 +313,25 @@ impl Termpose {
         }
 
         #[cfg(debug_assertions)]
-        println!("[{}/{}]\ttag_i: {},  \tjust_stepped_in: {},  \tprev_sigspace: {}", length, length, tag_i, self.just_stepped_in, preceding_sigspace);
+        println!(
+            "[{}/{}]\ttag_i: {},  \tjust_stepped_in: {},  \tprev_sigspace: {}",
+            length, length, tag_i, self.just_stepped_in, preceding_sigspace
+        );
         Ok(true)
-     }
+    }
 }
 
 fn main() {
-    let mut pose = Termpose::new_from_str("
+    let mut pose = Termpose::new_from_str(
+        "
 root
     a lot of alots
 allowed hallows
     wand
     cape
     rock
-").unwrap();
+",
+    ).unwrap();
     while pose.turn().unwrap() {
         println!("{:#?}\n\n", pose.finalise());
     }
