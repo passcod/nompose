@@ -232,7 +232,17 @@ impl Termpose {
         let length = line.len();
         self.current_line += 1;
 
-        for token in &line.0 {
+        let mut tag_i = 0;
+        let mut preceding_sigspace = false;
+
+        for (i, token) in line.iter().enumerate() {
+            #[cfg(debug_assertions)] {
+                let debug = format!("{:?}", token);
+                let variant = debug.split('(').next().unwrap();
+                println!("[{}/{}]\ttag_i: {},  \tjust_stepped_in: {},  \tprev_sigspace: {} \tprocessing: {}", i, length, tag_i, self.just_stepped_in, preceding_sigspace, variant);
+            }
+
+            let reset_sigspace = preceding_sigspace;
             match token {
                 Token::Indent(s) => {
                     let ci = self.current_indent();
@@ -271,18 +281,33 @@ impl Termpose {
                     self.step_out();
                 }
                 Token::Tag(t) => {
-                    self.node.add_node(Node::new(
+                    tag_i += 1;
+
+                    let node = Node::new(
                         t.0.clone(),
                         self.current_indent(),
                         self.current_line,
-                        0,
-                    ));
+                    );
+
+                    if tag_i == 2 {
+                        self.step_in();
+                    }
+
+                    self.node.add_node(node);
                     self.just_stepped_in = false;
                 }
-                _ => {}
+                Token::Sigspace => {
+                    preceding_sigspace = true;
+                }
+            }
+
+            if reset_sigspace {
+                preceding_sigspace = false;
             }
         }
 
+        #[cfg(debug_assertions)]
+        println!("[{}/{}]\ttag_i: {},  \tjust_stepped_in: {},  \tprev_sigspace: {}", length, length, tag_i, self.just_stepped_in, preceding_sigspace);
         Ok(true)
      }
 }
