@@ -224,7 +224,8 @@ impl Termpose {
         }
 
         #[cfg_attr(feature = "cargo-clippy", allow(indexing_slicing))]
-        let line = self.tokens[self.current_line].clone();
+        let line = self.tokens[self.current_line].clone().0;
+        let length = line.len();
         self.current_line += 1;
 
         for token in &line.0 {
