@@ -11,8 +11,8 @@ encoding used by the file. Parsers SHOULD support Unicode, and MAY support more
 encodings.
 
 S-Lists are:
-- _one_ atom (the **head atom**) and
-- _zero or more_ atoms (the **tail atoms**) in source-defined order.
+ - _one_ atom (the **head atom**) and
+ - _zero or more_ atoms (the **tail atoms**) in source-defined order.
 
 > **Non-normative commentary**
 >
@@ -37,11 +37,11 @@ S-Lists are:
 
 Bare atoms are character strings containing any character except for:
 
-- whitespace,
-- the escape character,
-- parenthesis,
-- colons (0x3A),
-- double-quotes (0x22).
+ - whitespace,
+ - the escape character,
+ - parenthesis,
+ - colons (0x3A),
+ - double-quotes (0x22).
 
 Whitespace MUST include spaces (0x20), newlines (0x0A), carriage-returns (0x0D),
 and tabs (0x09).
@@ -54,12 +54,12 @@ Bare atoms can be used and will be parsed as is.
 
 For example, the following are all bare atoms:
 
-- `elephants`
-- `tea-shop`
-- `les_éléphants`
-- `филҳо`
-- `戰爭大象`
-- `~!@#$%^&*`
+ - `elephants`
+ - `tea-shop`
+ - `les_éléphants`
+ - `филҳо`
+ - `戰爭大象`
+ - `~!@#$%^&*`
 
 ### 2.2. Escaping
 
@@ -96,12 +96,12 @@ an escape, or may even be composed entirely of escapes.
 
 For example, this are all valid escaped bare atoms:
 
-- `all\\is\\ashes`
-- `unbalanced\"`
-- `life\nunlife`
-- `data\tforever`
-- `\"magical\"`
-- `\\\\`
+ - `all\\is\\ashes`
+ - `unbalanced\"`
+ - `life\nunlife`
+ - `data\tforever`
+ - `\"magical\"`
+ - `\\\\`
 
 ### 2.4 Quoted atoms
 
@@ -113,17 +113,17 @@ All bare atoms and escaped bare atoms may be quoted without effect.
 
 For example, these are all _single_ valid quoted atoms:
 
-- `"habitual"`
-- `"home sweet home"`
-- `"this is a double quote: \""`
-- `"Incredibles (2)"`
-- `"	 (a single tab)"`
-- `"\t (a single tab)"`
-- ```
-"We must
-always
-take sides"
-```
-- `""` (an empty atom)
+ - `"habitual"`
+ - `"home sweet home"`
+ - `"this is a double quote: \""`
+ - `"Incredibles (2)"`
+ - `"	 (a single tab)"`
+ - `"\t (a single tab)"`
+ - ```
+   "We must
+   always
+   take sides"
+   ```
+ - `""` (an empty atom)
 
 There is a shorthand form of quoted atom, discussed in §3.N.
