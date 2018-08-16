@@ -21,6 +21,10 @@ The **label** of an s-list is a string of zero or more characters, as defined in
 the character encoding used by the file. Parsers SHOULD support Unicode, and MAY
 support more encodings.
 
+A field which is not present in an s-list is said to be _nil_.
+
+When an s-list has all of its fields _nil_, it is said to be a _nil s-list_.
+
 > **Non-normative commentary**
 >
 > Termpose was designed by inspiration from s-expressions, but is not strictly
@@ -143,3 +147,5 @@ For example, these are all _single_ valid quoted labels:
  - `""` (an empty label)
 
 There is a shorthand form of quoted label, discussed in §3.N.
+
+Note how an empty label (of length zero) is not the same as a _nil_ label.
