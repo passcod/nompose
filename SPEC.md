@@ -27,8 +27,8 @@ When an s-list has all of its fields _nil_, it is said to be a _nil s-list_.
 
 > **Non-normative commentary**
 >
-> Termpose was designed by inspiration from s-expressions, but is not strictly
-> compatible: s-expressions are strictly _pairs_, with _lists_ simply sugar, as
+> Termpose was designed by inspiration from s-expressions, but is not compatible
+> with them: s-expressions are strictly _pairs_, with _lists_ simply sugar, as
 > in `(a b c d)` being the equivalent to `(a (b (c d)))`.
 >
 > S-expressions are always binary trees. In contrast, Termpose represents
@@ -42,6 +42,18 @@ When an s-list has all of its fields _nil_, it is said to be a _nil s-list_.
 >                           1|
 >                            C
 > ```
+
+#### Note on semantics
+
+Termpose ascribes no semantics to data nor layout.
+
+Notably, while the head/tail mechanisms are critical to expressing the termpose
+data model, an application may choose to interpret any or all s-lists as arrays
+without differentiating between head or tail.
+
+Similarly, labels are character strings. Interpreting those into meaningful
+types is entirely left to the application to do as and if it pleases. It is not
+a termpose concern.
 
 ## 2. Label syntaxes
 
