@@ -2,17 +2,24 @@
 
 (Unofficial spec)
 
-## 1. Types
+## 1. Type system
 
-Termpose has two types: **atoms** and **s-lists**.
+Termpose only has a single, complex, type: the **s-list**.
 
-Atoms are strings of zero or more characters, as defined in the character
-encoding used by the file. Parsers SHOULD support Unicode, and MAY support more
-encodings.
+“Complex” here is used to mean that it is made of separate parts while being a
+whole, rather than a single value. It is not a commentary on complexity.
 
-S-Lists are:
- - _one_ atom (the **head atom**) and
- - _zero or more_ atoms (the **tail atoms**) in source-defined order.
+An s-list has three fields, _all of which are optional_:
+
+| Name  | Contents                        |
+|:------|:--------------------------------|
+| Label | A character string.             |
+| Head  | An s-list.                      |
+| Tail  | An ordered sequence of s-lists. |
+
+The **label** of an s-list is a string of zero or more characters, as defined in
+the character encoding used by the file. Parsers SHOULD support Unicode, and MAY
+support more encodings.
 
 > **Non-normative commentary**
 >
@@ -21,21 +28,26 @@ S-Lists are:
 > in `(a b c d)` being the equivalent to `(a (b (c d)))`.
 >
 > S-expressions are always binary trees. In contrast, Termpose represents
-> arbitrary trees, so `(a b c)` and `(a (b c))` are two different structures:
+> arbitrary trees with ordered child nodes, so `(a b c)`, `(a c b)`, and
+> `(a (b c))` are all different structures:
 >
 > ```
->    A       A
->  /  \      |
-> B   C      B
->            |
->            C
+>      A          A          A
+>   1/ 2\      1/ 2\        1|
+>   B   C      C    B        B
+>                           1|
+>                            C
 > ```
 
-## 2. Atom syntaxes
+## 2. Label syntaxes
 
-### 2.1. Bare atoms
+While it is possible to describe s-lists without a label in termpose directly,
+most of the time s-lists are created through their label. There are three ways
+to write labels in termpose:
 
-Bare atoms are character strings containing any character except for:
+### 2.1. Bare labels
+
+Bare labels are character strings containing any character except for:
 
  - whitespace,
  - the escape character,
@@ -50,9 +62,9 @@ The escape character is the backslash (0x5C).
 
 Parenthesis are both the opening (0x28) and closing (0x29) parenthesis.
 
-Bare atoms can be used and will be parsed as is.
+Bare labels can be used and will be parsed as is.
 
-For example, the following are all bare atoms:
+For example, the following are all bare labels:
 
  - `elephants`
  - `tea-shop`
@@ -77,7 +89,11 @@ The followings escapes MUST be implemented:
 |          `\n`           |      a newline (0x20)      |
 |          `\t`           |         a tab (0x09)       |
 
-Escapes not present in this table MUST halt parsing with an error.
+Escapes not present in this table MUST either:
+
+ - halt parsing with an error, OR
+ - trigger a warning AND be ignored such that the character following the escape
+   character is output instead of the escape sequence.
 
 > **Non-normative commentary**
 >
@@ -88,13 +104,13 @@ Escapes not present in this table MUST halt parsing with an error.
 > addition to the ones defined here to help in those cases, but should be aware
 > a future version of the spec may add escapes that could conflict with these.
 
-### 2.3. Escaped bare atoms
+### 2.3. Escaped bare labels
 
-With the escapes given in §2.2. above, bare atoms can include some forbidden
-characters provided they are suitably escaped. Escaped bare atoms may start with
+With the escapes given in §2.2. above, bare labels can include some forbidden
+characters provided they are suitably escaped. Escaped bare labels may start with
 an escape, or may even be composed entirely of escapes.
 
-For example, this are all valid escaped bare atoms:
+For example, this are all valid escaped bare labels:
 
  - `all\\is\\ashes`
  - `unbalanced\"`
@@ -103,15 +119,15 @@ For example, this are all valid escaped bare atoms:
  - `\"magical\"`
  - `\\\\`
 
-### 2.4 Quoted atoms
+### 2.4 Quoted labels
 
-An atom enclosed in double-quotes (0x22) can contain whitespace, parenthesis,
-and/or colons without restriction nor escaping. Quoted atoms can also contain
+A label enclosed in double-quotes (0x22) can contain whitespace, parenthesis,
+and/or colons without restriction nor escaping. Quoted labels can also contain
 escape sequences as defined in §2.2.
 
-All bare atoms and escaped bare atoms may be quoted without effect.
+All bare labels and escaped bare labels may be quoted without effect.
 
-For example, these are all _single_ valid quoted atoms:
+For example, these are all _single_ valid quoted labels:
 
  - `"habitual"`
  - `"home sweet home"`
@@ -124,6 +140,6 @@ For example, these are all _single_ valid quoted atoms:
    always
    take sides"
    ```
- - `""` (an empty atom)
+ - `""` (an empty label)
 
-There is a shorthand form of quoted atom, discussed in §3.N.
+There is a shorthand form of quoted label, discussed in §3.N.
