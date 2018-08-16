@@ -25,6 +25,9 @@ A field which is not present in an s-list is said to be _nil_.
 
 When an s-list has all of its fields _nil_, it is said to be a _nil s-list_.
 
+Note that it follows that an s-list may contain a _nil s-list_, and in that case
+the field containing that _nil_ s-list is **not** _nil_ itself.
+
 > **Non-normative commentary**
 >
 > Termpose was designed by inspiration from s-expressions, but is not compatible
