@@ -199,3 +199,11 @@ latter s-list as its **head**:
 | Termpose | Data |
 |:---------|:-----|
 | `one` <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;two</code> | <ul><li>label: `one`</li><li>head: <ul><li>label: `two`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li><li>tail: _nil_</li></ul> |
+
+Subsequent s-lists at that same indentation level are added to the first
+s-list's **tail**:
+
+| Termpose | Data |
+|:---------|:-----|
+| `one` <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;two</code> <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;three</code> | <ul><li>label: `one`</li><li>head: <ul><li>label: `two`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li><li>tail: <ol><li><ul><li>label: `three`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li></ol></li></ul> |
+| `one` <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;two</code> <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;three</code> <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;four</code> | <ul><li>label: `one`</li><li>head: <ul><li>label: `two`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li><li>tail: <ol><li><ul><li>label: `three`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li><li><ul><li>label: `four`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li></ol></li></ul> |
