@@ -7,7 +7,7 @@
 Termpose only has a single, complex, type: the **s-list**.
 
 “Complex” here is used to mean that it is made of separate parts while being a
-whole, rather than a single value. It is not a commentary on complexity.
+whole, rather than a simple type made of a single value.
 
 An s-list has three fields, _all of which are optional_:
 
