@@ -162,6 +162,40 @@ For example, these are all _single_ valid quoted labels:
    ```
  - `""` (an empty label)
 
-There is a shorthand form of quoted label, discussed in §3.N.
+There is a shorthand form of quoted label, discussed in §3.1.N.
 
 Note how an empty label (of length zero) is not the same as a _nil_ label.
+
+## 3. Layout syntaxes
+
+Termpose lays out data into structures using any combination of three syntaxes:
+
+- indent,
+- parens,
+- colons.
+
+Each syntax has its own behaviour and specialities. Syntaxes may be interleaved.
+
+### 3.1. Indent syntax
+
+Indent syntax describes s-lists through labels and their relative indentation.
+
+A character string, as defined in §2, on its own describes an s-list with a
+label of that string.
+
+| Termpose | Data |
+|:---------|:-----|
+| `label` | <ul><li>label: `label`</li><li>head: _nil_</li><li>tail: _nil_</li></ul> |
+
+Two s-lists at the same level of indentation are siblings:
+
+| Termpose | Data |
+|:---------|:-----|
+| `one` <br> `two` | <ol><li><ul><li>label: `one`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li><li><ul><li>label: `two`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li></ol> |
+
+An s-list followed by another s-list at a higher level of indentation has that
+latter s-list as its **head**:
+
+| Termpose | Data |
+|:---------|:-----|
+| `one` <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;two</code> | <ul><li>label: `one`</li><li>head: <ul><li>label: `two`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li><li>tail: _nil_</li></ul> |
