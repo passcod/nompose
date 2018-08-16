@@ -105,7 +105,8 @@ The followings escapes MUST be implemented:
 |:-----------------------:|:--------------------------:|
 |          `\\`           |      a backlash (`\`)      |
 |          `\"`           |    a double-quote (`"`)    |
-|          `\n`           |      a newline (0x20)      |
+|          `\n`           |     a line feed (0xOA)     |
+|          `\r`           |  a carriage return (0xOD)  |
 |          `\t`           |         a tab (0x09)       |
 
 Escapes not present in this table MUST either:
