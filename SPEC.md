@@ -159,11 +159,14 @@ used as such:
 
 ### 3.3. Escaped bare labels
 
-With the escapes given in [§3.2] above, bare labels can include some forbidden
-characters provided they are suitably escaped. Escaped bare labels may start
-with an escape, or may even be composed entirely of escapes.
+With the escapes given in [§3.2] above, bare labels can include
+previously-forbidden characters provided they are suitably escaped, to the
+exception of whitespace, which is always forbidden in bare labels.
 
-For example, this are all valid escaped bare labels:
+Escaped bare labels may start with an escape, or may even be composed entirely
+of escapes.
+
+For example, these are all valid escaped bare labels:
 
  - `all\\is\\ashes`
  - `unbalanced\"`
