@@ -95,7 +95,11 @@ named!(escaped_tag<&str, Tag>, map!(
 named!(escapes<&str, &str>, alt!(
     tag!("\\") => { |_| "\\" } |
     tag!("\"") => { |_| "\"" } |
-    tag!("h") => { |_| "☃" }
+    tag!("n") => { |_| "\n" } |
+    tag!("r") => { |_| "\r" } |
+    tag!("t") => { |_| "\t" } |
+    tag!("h") => { |_| "☃" } |
+    take!(1) => { |s| s }
 ));
 
 const BARE_ESCAPED_NOTS: &str = " \t\r\n\"\\:()";

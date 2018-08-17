@@ -11,16 +11,16 @@ fn simple_tag_partial_read() {
 #[test]
 fn escaped() {
     assert_eq!(
-        escaped_tag("Foo\\\"bar \\\\baz \n"),
-        Ok(("\n", Tag("Foo\"bar \\baz ".into())))
+        escaped_tag("Foo\\\"bar \\\\baz \\)\\:\\( \\z \n"),
+        Ok(("\n", Tag("Foo\"bar \\baz ):( z ".into())))
     );
 }
 
 #[test]
 fn quoted() {
     assert_eq!(
-        quoted_tag("\"Foo\\\"bar \\\\baz \"\n"),
-        Ok(("\n", Tag("Foo\"bar \\baz ".into())))
+        quoted_tag("\"Foo\\\"bar \\\\baz\\n\\t\\: \\! \\§ \"\n"),
+        Ok(("\n", Tag("Foo\"bar \\baz\n\t: ! § ".into())))
     );
 }
 
