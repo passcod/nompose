@@ -4,67 +4,75 @@
 
 ## 1. Type system
 
-Termpose only has a single, complex, type: the **s-list**.
+Termpose only has a single composite type: the **s-list**.
 
-“Complex” here is used to mean that it is made of separate parts while being a
-whole, rather than a simple type made of a single value.
-
-An s-list has three fields, _all of which are optional_:
+An s-list has two fields:
 
 | Name  | Contents                        |
 |:------|:--------------------------------|
-| Label | A character string.             |
-| Head  | An s-list.                      |
+| Head  | Either an s-list or a label.    |
 | Tail  | An ordered sequence of s-lists. |
 
-The **label** of an s-list is a string of zero or more characters, as defined in
-the character encoding used by the file. Parsers SHOULD support Unicode, and MAY
-support more encodings.
+A **label** is a string of zero or more characters, as defined in the character
+encoding used by the file. Parsers MUST support ASCII-7, SHOULD support Unicode,
+and MAY support more encodings.
 
-A field which is not present in an s-list is said to be _nil_.
-
-When an s-list has all of its fields _nil_, it is said to be a _nil s-list_.
-
-Note that it follows that an s-list may contain a _nil s-list_, and in that case
-the field containing that _nil_ s-list is **not** _nil_ itself.
-
-> **Non-normative commentary**
->
-> Termpose was designed by inspiration from s-expressions, but is not compatible
-> with them: s-expressions are strictly _pairs_, with _lists_ simply sugar, as
-> in `(a b c d)` being the equivalent to `(a (b (c d)))`.
->
-> S-expressions are always binary trees. In contrast, Termpose represents
-> arbitrary trees with ordered child nodes, so `(a b c)`, `(a c b)`, and
-> `(a (b c))` are all different structures:
->
-> ```
->      A          A          A
->   1/ 2\      1/ 2\        1|
->   B   C      C    B        B
->                           1|
->                            C
-> ```
+There is a special case of s-list where its head is absent and its tail empty:
+the **nil s-list**, or just **nil** for short. This is the only time an s-list's
+head can be absent.
 
 #### Note on semantics
 
 Termpose ascribes no semantics to data nor layout.
 
 Notably, while the head/tail mechanisms are critical to expressing the termpose
-data model, an application may choose to interpret any or all s-lists as arrays
-without differentiating between head or tail.
+data model, an application may choose to interpret an s-list's child s-lists as
+a contiguous array rather than two distinct slots.
 
 Similarly, labels are character strings. Interpreting those into meaningful
 types is entirely left to the application to do as and if it pleases. It is not
 a termpose concern.
 
-## 2. Label syntaxes
+## 2. Syntax overview
 
-While it is possible to describe s-lists without a label in termpose directly,
-most of the time s-lists are created through their label. There are three ways
-to write labels in termpose:
+A termpose document contains literal labels, which define s-lists with a head of
+that label, laid out into structures through three mechanisms:
 
-### 2.1. Bare labels
+ - indenting, where a line's leading whitespace describes structure in context;
+ - parenthesis, where `(` and `)` describe structure; and
+ - colons (`:`), which enable a shorthand syntax for some common structures.
+
+Labels can be written in two main ways:
+
+ - as part of a single line, using several syntaxes depending on what characters
+   they contain; or
+ - multiline, through the indenting mechanism.
+
+Here is an example of a termpose document:
+
+```
+mon
+   name leafward
+   affinity creation
+   description "
+      Plants healing bombs.
+      Standard attack.
+      Watch out, it's fragile!
+   stride 2
+   stamina 3
+   recovery 2
+   health 50
+   abilities
+      move
+      strike drain:2 damage:standard:2
+      bomb drain:3 effect:heal:standard:2
+```
+
+## 3. Label literals
+
+There are three ways to write labels in termpose:
+
+### 3.1. Bare labels
 
 Bare labels are character strings containing any character except for:
 
@@ -92,7 +100,7 @@ For example, the following are all bare labels:
  - `戰爭大象`
  - `~!@#$%^&*`
 
-### 2.2. Escaping
+### 3.2. Escaping
 
 A backlash invokes an alternative interpretation of the character following that
 backslash. The backslash is called the **escape character**, the combination of
@@ -124,7 +132,7 @@ Escapes not present in this table MUST either:
 > addition to the ones defined here to help in those cases, but should be aware
 > a future version of the spec may add escapes that could conflict with these.
 
-### 2.3. Escaped bare labels
+### 3.3. Escaped bare labels
 
 With the escapes given in §2.2. above, bare labels can include some forbidden
 characters provided they are suitably escaped. Escaped bare labels may start with
@@ -139,7 +147,7 @@ For example, this are all valid escaped bare labels:
  - `\"magical\"`
  - `\\\\`
 
-### 2.4 Quoted labels
+### 3.4 Quoted labels
 
 A label enclosed in double-quotes (0x22) can contain whitespace, parenthesis,
 and/or colons without restriction nor escaping. Quoted labels can also contain
@@ -162,21 +170,13 @@ For example, these are all _single_ valid quoted labels:
    ```
  - `""` (an empty label)
 
-There is a shorthand form of quoted label, discussed in §3.1.N.
+### 3.5 Multiline labels
 
-Note how an empty label (of length zero) is not the same as a _nil_ label.
+TODO
 
-## 3. Layout syntaxes
+## 4. Indenting
 
-Termpose lays out data into structures using any combination of three syntaxes:
-
-- indent,
-- parens,
-- colons.
-
-Each syntax has its own behaviour and specialities. Syntaxes may be interleaved.
-
-### 3.1. Indent syntax
+_This section is being rewritten_
 
 Indent syntax describes s-lists through labels and their relative indentation.
 
