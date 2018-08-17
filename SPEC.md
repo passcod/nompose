@@ -144,7 +144,7 @@ The followings escapes MUST be implemented:
 |          `\r`           |  a carriage return (0xOD)  |
 |          `\t`           |         a tab (0x09)       |
 
-Escapes not present in this table MUST either:
+Escapes not present in this table must either:
 
  - halt parsing with an error, OR
  - trigger a warning AND be ignored such that the character following the escape
