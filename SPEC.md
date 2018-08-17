@@ -1,6 +1,32 @@
 # Termpose
 
-(Unofficial spec)
+### Abstract
+
+TODO
+
+### Status
+
+- Unofficial
+- Draft
+
+### Authors
+
+TBC
+
+### Table of Contents
+
+1. [Type System](#1-type-system)
+   - [Note on semantics](#note-on-semantics)
+2. [Syntax overview](#2-syntax-overview)
+3. [Label literals](#3-label-literals)
+   1. [Bare labels](#31-bare-labels)
+   2. [Escaping](#32-escaping)
+   3. [Escaped bare labels](#33-escaped-bare-labels)
+   4. [Quoted labels](#34-quoted-labels)
+   5. [Multiline labels](#35-multiline-labels)
+4. [Indenting](#4-indenting)
+5. [Parenthesis](#5-parenthesis)
+6. [Colons](#6-colons)
 
 ## 1. Type system
 
