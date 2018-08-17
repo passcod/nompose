@@ -61,12 +61,13 @@ a termpose concern.
 
 ## 2. Syntax overview
 
-A termpose document contains literal labels, which define s-lists with a head of
-that label, laid out into structures through three mechanisms:
+A termpose document contains literal labels, which define s-lists with a head
+of that label, laid out into structures through three mechanisms, named after
+the character kinds they employ to describe structure:
 
- - indenting, where a line's leading whitespace describes structure in context;
- - parenthesis, where `(` and `)` describe structure; and
- - colons (`:`), which enable a shorthand syntax for some common structures.
+ - whitespace, using lines' or s-lists' surrounding spacing and indenting;
+ - parens, with opening, closing, implied, or nested parentheses; and
+ - colons, which is a shorthand syntax for some common structures.
 
 Labels can be written in two ways:
 
