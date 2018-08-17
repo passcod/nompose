@@ -125,7 +125,7 @@ Escapes not present in this table MUST either:
 > **Non-normative commentary**
 >
 > Note that no other escaping is provided for at this time. Notably, to express
-> a null byte, it is completely legal to include it as-is in an atom, and §2.1.
+> a null byte, it is completely legal to include it as-is in an atom, and §3.1.
 > mandates that a parser handles this. However, in C-based parsers, this may
 > cause issues. Implementations may wish to provide their own escapes in
 > addition to the ones defined here to help in those cases, but should be aware
@@ -133,7 +133,7 @@ Escapes not present in this table MUST either:
 
 ### 3.3. Escaped bare labels
 
-With the escapes given in §2.2. above, bare labels can include some forbidden
+With the escapes given in §3.2. above, bare labels can include some forbidden
 characters provided they are suitably escaped. Escaped bare labels may start with
 an escape, or may even be composed entirely of escapes.
 
@@ -150,7 +150,7 @@ For example, this are all valid escaped bare labels:
 
 A label enclosed in double-quotes (0x22) can contain whitespace, parenthesis,
 and/or colons without restriction nor escaping. Quoted labels can also contain
-escape sequences as defined in §2.2.
+escape sequences as defined in §3.2.
 
 All bare labels and escaped bare labels may be quoted without effect.
 
@@ -177,7 +177,7 @@ TODO
 
 Indent syntax describes s-lists through labels and their relative indentation.
 
-A character string, as defined in §2, on its own describes an s-list with a
+A character string, as defined in §3, on its own describes an s-list with a
 label of that string.
 
 | Termpose | Data |
