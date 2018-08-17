@@ -206,19 +206,10 @@ TODO
 
 Indent syntax describes structure through relative indentation.
 
-| Termpose | Data |
-|:---------|:-----|
-| `label` | <ul><li>head: `label`</li><li>tail: _empty_</li></ul> |
-
-Two s-lists at the same level of indentation are siblings:
-
-| Termpose | Data |
-|:---------|:-----|
-| `one` <br> `two` | <ol><li><ul><li>head: `one`</li><li>tail: _empty_</li></ul></li><li><ul><li>head: `two`</li><li>tail: _empty_</li></ul></li></ol> |
-
 An s-list followed by another s-list at a higher level of indentation has that
-latter s-list as its first **tail** s-list. Subsequent s-lists at that same
-indentation level are added to the first s-list's tail:
+latter s-list as its first **tail** s-list.
+
+Subsequent s-lists at that same indentation level are each others' siblings.
 
 | Termpose | Data |
 |:---------|:-----|
