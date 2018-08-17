@@ -42,17 +42,16 @@ that label, laid out into structures through three mechanisms:
  - parenthesis, where `(` and `)` describe structure; and
  - colons (`:`), which enable a shorthand syntax for some common structures.
 
-Labels can be written in two main ways:
+Labels can be written in two ways:
 
- - as part of a single line, using several syntaxes depending on what characters
-   they contain; or
- - multiline, through the indenting mechanism.
+ - as literals inside of a line; or
+ - as a multiline quote, through the indenting mechanism.
 
 Here is an example of a termpose document:
 
 ```
 mon
-   name leafward
+   name "courageous leafward"
    affinity creation
    description "
       Plants healing bombs.
@@ -64,8 +63,8 @@ mon
    health 50
    abilities
       move
-      strike drain:2 damage:standard:2
-      bomb drain:3 effect:heal:standard:2
+      strike drain:2 effect( damage:2 )
+      bomb drain:3 effect( heal:5 slow:1 )
 ```
 
 ## 3. Label literals
@@ -176,8 +175,6 @@ TODO
 
 ## 4. Indenting
 
-_This section is being rewritten_
-
 Indent syntax describes s-lists through labels and their relative indentation.
 
 A character string, as defined in §2, on its own describes an s-list with a
@@ -185,25 +182,20 @@ label of that string.
 
 | Termpose | Data |
 |:---------|:-----|
-| `label` | <ul><li>label: `label`</li><li>head: _nil_</li><li>tail: _nil_</li></ul> |
+| `label` | <ul><li>head: `label`</li><li>tail: _empty_</li></ul> |
 
 Two s-lists at the same level of indentation are siblings:
 
 | Termpose | Data |
 |:---------|:-----|
-| `one` <br> `two` | <ol><li><ul><li>label: `one`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li><li><ul><li>label: `two`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li></ol> |
+| `one` <br> `two` | <ol><li><ul><li>head: `one`</li><li>tail: _empty_</li></ul></li><li><ul><li>head: `two`</li><li>tail: _empty_</li></ul></li></ol> |
 
 An s-list followed by another s-list at a higher level of indentation has that
-latter s-list as its **head**:
+latter s-list as its first **tail** s-list. Subsequent s-lists at that same
+indentation level are added to the first s-list's tail:
 
 | Termpose | Data |
 |:---------|:-----|
-| `one` <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;two</code> | <ul><li>label: `one`</li><li>head: <ul><li>label: `two`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li><li>tail: _nil_</li></ul> |
-
-Subsequent s-lists at that same indentation level are added to the first
-s-list's **tail**:
-
-| Termpose | Data |
-|:---------|:-----|
-| `one` <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;two</code> <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;three</code> | <ul><li>label: `one`</li><li>head: <ul><li>label: `two`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li><li>tail: <ol><li><ul><li>label: `three`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li></ol></li></ul> |
-| `one` <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;two</code> <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;three</code> <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;four</code> | <ul><li>label: `one`</li><li>head: <ul><li>label: `two`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li><li>tail: <ol><li><ul><li>label: `three`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li><li><ul><li>label: `four`</li><li>head: _nil_</li><li>tail: _nil_</li></ul></li></ol></li></ul> |
+| `one` <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;two</code> | <ul><li>head: `one`</li><li>tail: <ol><li><ul><li>head: `two`</li><li>tail: _empty_</li></ul></li></ol></li></ul> |
+| `one` <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;two</code> <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;three</code> | <ul><li>head: `one`</li><li>tail: <ol><li><ul><li>head: `two`</li><li>tail: _empty_</li></ul></li><li><ul><li>head: `three`</li><li>tail: _empty_</li></ul></li></ol></li></ul> |
+| `one` <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;two</code> <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;three</code> <br> <code>&nbsp;&nbsp;&nbsp;&nbsp;four</code> | <ul><li>head: `one`</li><li>tail: <ol><li><ul><li>head: `two`</li><li>tail: _empty_</li></ul></li><li><ul><li>head: `three`</li><li>tail: _empty_</li></ul></li><li><ul><li>head: `four`</li><li>tail: _empty_</li></ul></li></ol></li></ul> |
