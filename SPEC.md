@@ -162,16 +162,17 @@ For example, these are all _single_ valid quoted labels:
  - `"Incredibles (2)"`
  - `"	 (a single tab)"`
  - `"\t (a single tab)"`
- - ```
-   "We must
-   always
-   take sides"
-   ```
  - `""` (an empty label)
 
 ### 3.5 Multiline labels
 
 TODO
+
+ - ```
+   "We must
+   always
+   take sides"
+   ```
 
 ## 4. Indenting
 
