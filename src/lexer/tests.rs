@@ -81,7 +81,10 @@ fn close_paren() {
 
 #[test]
 fn line_single() {
-    assert_eq!(line("foo\n"), Ok(("\n", Line(vec![Token::tag("foo")]))));
+    assert_eq!(
+        line("foo\n"),
+        Ok(("\n", Line(vec![Token::indent(""), Token::tag("foo")])))
+    );
 }
 
 #[test]
@@ -91,6 +94,7 @@ fn line_multi() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("foo"),
                 Token::tag("bar"),
                 Token::tag("baz"),
@@ -103,7 +107,14 @@ fn line_multi() {
 fn line_colon() {
     assert_eq!(
         line("foo:\n"),
-        Ok(("\n", Line(vec![Token::tag("foo"), Open::Colon.into()])))
+        Ok((
+            "\n",
+            Line(vec![
+                Token::indent(""),
+                Token::tag("foo"),
+                Open::Colon.into(),
+            ])
+        ))
     );
 }
 
@@ -114,6 +125,7 @@ fn line_colon_multi() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("foo"),
                 Open::Colon.into(),
                 Token::tag("bar"),
@@ -129,6 +141,7 @@ fn line_trailing_colon() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("foo"),
                 Token::tag("bar"),
                 Open::Colon.into(),
@@ -144,6 +157,7 @@ fn line_quoted_colon() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("foo"),
                 Token::tag("bar"),
                 Open::Colon.into(),
@@ -160,6 +174,7 @@ fn line_quoted_open_paren() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("foo"),
                 Token::tag("bar"),
                 Open::Colon.into(),
@@ -176,6 +191,7 @@ fn line_quoted_close_paren() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("foo"),
                 Token::tag("bar"),
                 Open::Colon.into(),
@@ -192,6 +208,7 @@ fn line_open_paren() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("foo"),
                 Open::Paren.into(),
                 Token::tag("bar"),
@@ -207,6 +224,7 @@ fn line_open_close() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("foo"),
                 Open::Paren.into(),
                 Token::tag("bar"),
@@ -224,6 +242,7 @@ fn line_open_close_sigspace() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("foo"),
                 Token::Sigspace,
                 Open::Paren.into(),
@@ -242,6 +261,7 @@ fn line_open_close_two_tags() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("foo"),
                 Token::Sigspace,
                 Open::Paren.into(),
@@ -261,6 +281,7 @@ fn line_open_close_two_tags_last_space() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("foo"),
                 Token::Sigspace,
                 Open::Paren.into(),
@@ -281,6 +302,7 @@ fn line_open_close_two_tags_last_nospace_after() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("foo"),
                 Token::Sigspace,
                 Open::Paren.into(),
@@ -301,6 +323,7 @@ fn line_sigspace_two_opens_quoted_paren() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("foo"),
                 Token::Sigspace,
                 Open::Paren.into(),
@@ -319,6 +342,7 @@ fn line_sigspace_leading_colon() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("foo"),
                 Token::Sigspace,
                 Open::Colon.into(),
@@ -426,7 +450,10 @@ fn line_quoted_quotes() {
 
 #[test]
 fn empty_tag() {
-    assert_eq!(line("\"\"\n"), Ok(("\n", Line(vec![Token::tag("")]))));
+    assert_eq!(
+        line("\"\"\n"),
+        Ok(("\n", Line(vec![Token::indent(""), Token::tag("")])))
+    );
 }
 
 #[test]
@@ -435,7 +462,11 @@ fn bare_escaped_tags() {
         line("foo\\\\bar baz\\\"qux\n"),
         Ok((
             "\n",
-            Line(vec![Token::tag("foo\\bar"), Token::tag("baz\"qux")])
+            Line(vec![
+                Token::indent(""),
+                Token::tag("foo\\bar"),
+                Token::tag("baz\"qux"),
+            ])
         ))
     );
 }
@@ -444,7 +475,14 @@ fn bare_escaped_tags() {
 fn bare_escaped_tag_with_starting_escape() {
     assert_eq!(
         line("foo \\\"bar\n"),
-        Ok(("\n", Line(vec![Token::tag("foo"), Token::tag("\"bar")])))
+        Ok((
+            "\n",
+            Line(vec![
+                Token::indent(""),
+                Token::tag("foo"),
+                Token::tag("\"bar"),
+            ])
+        ))
     );
 }
 
@@ -452,7 +490,14 @@ fn bare_escaped_tag_with_starting_escape() {
 fn bare_escaped_tag_with_multiple_starting_escapes() {
     assert_eq!(
         line("foo \\\"\\\\bar\n"),
-        Ok(("\n", Line(vec![Token::tag("foo"), Token::tag("\"\\bar")])))
+        Ok((
+            "\n",
+            Line(vec![
+                Token::indent(""),
+                Token::tag("foo"),
+                Token::tag("\"\\bar"),
+            ])
+        ))
     );
 }
 
@@ -460,7 +505,14 @@ fn bare_escaped_tag_with_multiple_starting_escapes() {
 fn bare_escaped_tag_with_only_escapes() {
     assert_eq!(
         line("foo \\\"\\\\\\\"\n"),
-        Ok(("\n", Line(vec![Token::tag("foo"), Token::tag("\"\\\"")])))
+        Ok((
+            "\n",
+            Line(vec![
+                Token::indent(""),
+                Token::tag("foo"),
+                Token::tag("\"\\\""),
+            ])
+        ))
     );
 }
 
@@ -471,6 +523,7 @@ fn snowmen() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("snow!!!☃"),
                 Token::tag("☃"),
                 Token::tag("☃"),
@@ -488,6 +541,7 @@ fn all_tag_forms() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("foo"),
                 Token::tag("bar "),
                 Token::tag("baz\"qux"),
@@ -504,6 +558,7 @@ fn only_parens() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Open::Paren.into(),
                 Open::Paren.into(),
                 Open::Paren.into(),
@@ -522,6 +577,7 @@ fn only_parens_imbalance() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Open::Paren.into(),
                 Open::Paren.into(),
                 Open::Paren.into(),
@@ -539,6 +595,7 @@ fn only_colons() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Open::Colon.into(),
                 Open::Colon.into(),
                 Open::Colon.into(),
@@ -554,6 +611,7 @@ fn only_colons_in_parens() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Open::Paren.into(),
                 Open::Colon.into(),
                 Open::Colon.into(),
@@ -570,6 +628,7 @@ fn colons_between_tags() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("a"),
                 Open::Colon.into(),
                 Open::Colon.into(),
@@ -587,6 +646,7 @@ fn colons_in_parens_between_tags() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("a"),
                 Open::Paren.into(),
                 Token::tag("b"),
@@ -607,6 +667,7 @@ fn colon_alone_between_tags() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("ne"),
                 Token::tag("ne"),
                 Token::Sigspace,
@@ -624,6 +685,7 @@ fn nested_parens() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Open::Paren.into(),
                 Token::tag("ne"),
                 Token::Sigspace,
@@ -667,7 +729,7 @@ fn many_open_parens() {
             "\n",
             vec![
                 Line(vec![]),
-                Line(vec![Token::tag("-")]),
+                Line(vec![Token::indent(""), Token::tag("-")]),
                 Line(vec![
                     Token::indent("    "),
                     Token::tag("A"),
@@ -689,6 +751,7 @@ fn many_open_parens() {
                     Token::tag("E"),
                 ]),
                 Line(vec![
+                    Token::indent(""),
                     Token::tag("-"),
                     Token::Sigspace,
                     Open::Paren.into(),
@@ -729,6 +792,7 @@ fn chained_colons() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("a"),
                 Open::Colon.into(),
                 Token::tag("b"),
@@ -750,6 +814,7 @@ fn chained_parens() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Open::Paren.into(),
                 Token::tag("A"),
                 Token::Sigspace,
@@ -778,9 +843,9 @@ fn lines_triple() {
         Ok((
             "\n",
             vec![
-                Line(vec![Token::tag("foo")]),
-                Line(vec![Token::tag("bar")]),
-                Line(vec![Token::tag("baz")]),
+                Line(vec![Token::indent(""), Token::tag("foo")]),
+                Line(vec![Token::indent(""), Token::tag("bar")]),
+                Line(vec![Token::indent(""), Token::tag("baz")]),
             ]
         ))
     );
@@ -788,14 +853,17 @@ fn lines_triple() {
 
 #[test]
 fn lines_char() {
-    assert_eq!(lines("1\n"), Ok(("\n", vec![Line(vec![Token::tag("1")])])));
+    assert_eq!(
+        lines("1\n"),
+        Ok(("\n", vec![Line(vec![Token::indent(""), Token::tag("1")])]))
+    );
 }
 
 #[test]
 fn lines_single() {
     assert_eq!(
         lines("one\n"),
-        Ok(("\n", vec![Line(vec![Token::tag("one")])]))
+        Ok(("\n", vec![Line(vec![Token::indent(""), Token::tag("one")])]))
     );
 }
 
@@ -803,7 +871,14 @@ fn lines_single() {
 fn lines_single_two() {
     assert_eq!(
         lines("tw o\n"),
-        Ok(("\n", vec![Line(vec![Token::tag("tw"), Token::tag("o")])]))
+        Ok((
+            "\n",
+            vec![Line(vec![
+                Token::indent(""),
+                Token::tag("tw"),
+                Token::tag("o"),
+            ])]
+        ))
     );
 }
 
@@ -814,8 +889,8 @@ fn lines_double_two() {
         Ok((
             "\n",
             vec![
-                Line(vec![Token::tag("th"), Token::tag("r")]),
-                Line(vec![Token::tag("ee")]),
+                Line(vec![Token::indent(""), Token::tag("th"), Token::tag("r")]),
+                Line(vec![Token::indent(""), Token::tag("ee")]),
             ]
         ))
     );
@@ -828,7 +903,7 @@ fn lines_second_indent() {
         Ok((
             "\n",
             vec![
-                Line(vec![Token::tag("root")]),
+                Line(vec![Token::indent(""), Token::tag("root")]),
                 Line(vec![Token::indent("\t\t"), Token::tag("indent")]),
             ]
         ))
@@ -843,7 +918,7 @@ fn lines_initial_blank() {
             "\n",
             vec![
                 Line(vec![]),
-                Line(vec![Token::tag("root")]),
+                Line(vec![Token::indent(""), Token::tag("root")]),
                 Line(vec![Token::indent("\t\t"), Token::tag("indent")]),
             ]
         ))
@@ -858,7 +933,7 @@ fn lines_initial_just_indent() {
             "\n",
             vec![
                 Line(vec![Token::indent("  ")]),
-                Line(vec![Token::tag("root")]),
+                Line(vec![Token::indent(""), Token::tag("root")]),
                 Line(vec![Token::indent("\t\t"), Token::tag("indent")]),
             ]
         ))
@@ -932,7 +1007,10 @@ fn newlines_lf() {
         lines("a\nb\n"),
         Ok((
             "\n",
-            vec![Line(vec![Token::tag("a")]), Line(vec![Token::tag("b")])]
+            vec![
+                Line(vec![Token::indent(""), Token::tag("a")]),
+                Line(vec![Token::indent(""), Token::tag("b")]),
+            ]
         ))
     );
 }
@@ -943,7 +1021,10 @@ fn newlines_cr() {
         lines("a\rb\r"),
         Ok((
             "\r",
-            vec![Line(vec![Token::tag("a")]), Line(vec![Token::tag("b")])]
+            vec![
+                Line(vec![Token::indent(""), Token::tag("a")]),
+                Line(vec![Token::indent(""), Token::tag("b")]),
+            ]
         ))
     );
 }
@@ -954,7 +1035,10 @@ fn newlines_crlf() {
         lines("a\r\nb\r\n"),
         Ok((
             "\r\n",
-            vec![Line(vec![Token::tag("a")]), Line(vec![Token::tag("b")])]
+            vec![
+                Line(vec![Token::indent(""), Token::tag("a")]),
+                Line(vec![Token::indent(""), Token::tag("b")]),
+            ]
         ))
     );
 }
@@ -965,7 +1049,10 @@ fn newlines_lfcr() {
         lines("a\n\rb\n\r"),
         Ok((
             "\n\r",
-            vec![Line(vec![Token::tag("a")]), Line(vec![Token::tag("b")])]
+            vec![
+                Line(vec![Token::indent(""), Token::tag("a")]),
+                Line(vec![Token::indent(""), Token::tag("b")]),
+            ]
         ))
     );
 }
@@ -976,7 +1063,11 @@ fn trailing_quote() {
         lines("foo\"\n"),
         Ok((
             "\n",
-            vec![Line(vec![Token::tag("foo"), Open::Quote.into()])]
+            vec![Line(vec![
+                Token::indent(""),
+                Token::tag("foo"),
+                Open::Quote.into(),
+            ])]
         ))
     );
 }
@@ -988,6 +1079,7 @@ fn trailing_quote_and_spaces() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("open"),
                 Open::Quote.into(),
                 Token::tag("   "),
@@ -1003,6 +1095,7 @@ fn trailing_quote_and_tab() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("open"),
                 Open::Quote.into(),
                 Token::tag("\t"),
@@ -1018,6 +1111,7 @@ fn trailing_quote_and_space() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("open"),
                 Open::Quote.into(),
                 Token::tag(" "),
@@ -1033,6 +1127,7 @@ fn trailing_quote_and_mixed_whitespace() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("open"),
                 Open::Quote.into(),
                 Token::tag(" \t "),
@@ -1048,6 +1143,7 @@ fn trailing_quote_and_word() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("open"),
                 Open::Quote.into(),
                 Token::tag("ash"),
@@ -1063,6 +1159,7 @@ fn quoted_tag_and_trailing_quote() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("open"),
                 Token::tag("ash"),
                 Token::tag("bash"),
@@ -1079,6 +1176,7 @@ fn quoted_tag_and_trailing_quote_and_word() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("open"),
                 Token::tag("ash"),
                 Token::tag("bash"),
@@ -1096,6 +1194,7 @@ fn quoted_tag_and_trailing_quote_and_escapes() {
         Ok((
             "\n",
             Line(vec![
+                Token::indent(""),
                 Token::tag("open"),
                 Token::tag("ash"),
                 Token::tag("bash"),
@@ -1113,7 +1212,11 @@ fn trailing_quote_and_quote_in_indent() {
         Ok((
             "\n",
             vec![
-                Line(vec![Token::tag("open"), Open::Quote.into()]),
+                Line(vec![
+                    Token::indent(""),
+                    Token::tag("open"),
+                    Open::Quote.into(),
+                ]),
                 Line(vec![
                     Token::indent("\t"),
                     Token::tag("home"),
@@ -1152,7 +1255,7 @@ mon
 "),
         Ok(vec![
             Line(vec![]),
-            Line(vec![Token::tag("mon")]),
+            Line(vec![Token::indent(""), Token::tag("mon")]),
             Line(vec![
                 Token::indent("  "),
                 Token::tag("name"),
