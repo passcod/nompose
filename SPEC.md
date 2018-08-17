@@ -150,15 +150,6 @@ Escapes not present in this table MUST either:
  - trigger a warning AND be ignored such that the character following the escape
    character is output instead of the escape sequence.
 
-> **Non-normative commentary**
->
-> Note that no other escaping is provided for at this time. Notably, to express
-> a null byte, it is completely legal to include it as-is in an atom, and
-> [§3.1] mandates that a parser handles this. However, in C-based parsers, this
-> may cause issues. Implementations may wish to provide their own escapes in
-> addition to the ones defined here to help in those cases, but should be aware
-> a future version of the spec may add escapes that could conflict with these.
-
 ### 3.3. Escaped bare labels
 
 With the escapes given in [§3.2] above, bare labels can include some forbidden
