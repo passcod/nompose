@@ -15,7 +15,7 @@ TBC
 
 ### Table of Contents
 
-1. [Type System](#1-type-system)
+1. [Type system](#1-type-system)
    - [Note on semantics](#note-on-semantics)
 2. [Syntax overview](#2-syntax-overview)
 3. [Label literals](#3-label-literals)
@@ -98,6 +98,7 @@ mon
 There are three ways to write labels in termpose:
 
 ### 3.1. Bare labels
+[§3.1]: #31-bare-labels
 
 Bare labels are character strings containing any character except for:
 
@@ -126,6 +127,7 @@ For example, the following are all bare labels:
  - `~!@#$%^&*`
 
 ### 3.2. Escaping
+[§3.2]: #32-escaping
 
 A backlash invokes an alternative interpretation of the character following that
 backslash. The backslash is called the **escape character**, the combination of
@@ -151,17 +153,17 @@ Escapes not present in this table MUST either:
 > **Non-normative commentary**
 >
 > Note that no other escaping is provided for at this time. Notably, to express
-> a null byte, it is completely legal to include it as-is in an atom, and §3.1.
-> mandates that a parser handles this. However, in C-based parsers, this may
-> cause issues. Implementations may wish to provide their own escapes in
+> a null byte, it is completely legal to include it as-is in an atom, and
+> [§3.1] mandates that a parser handles this. However, in C-based parsers, this
+> may cause issues. Implementations may wish to provide their own escapes in
 > addition to the ones defined here to help in those cases, but should be aware
 > a future version of the spec may add escapes that could conflict with these.
 
 ### 3.3. Escaped bare labels
 
-With the escapes given in §3.2. above, bare labels can include some forbidden
-characters provided they are suitably escaped. Escaped bare labels may start with
-an escape, or may even be composed entirely of escapes.
+With the escapes given in [§3.2] above, bare labels can include some forbidden
+characters provided they are suitably escaped. Escaped bare labels may start
+with an escape, or may even be composed entirely of escapes.
 
 For example, this are all valid escaped bare labels:
 
@@ -176,7 +178,7 @@ For example, this are all valid escaped bare labels:
 
 A label enclosed in double-quotes (0x22) can contain whitespace, parenthesis,
 and/or colons without restriction nor escaping. Quoted labels can also contain
-escape sequences as defined in §3.2.
+escape sequences as defined in [§3.2].
 
 All bare labels and escaped bare labels may be quoted without effect.
 
@@ -202,10 +204,7 @@ TODO
 
 ## 4. Indenting
 
-Indent syntax describes s-lists through labels and their relative indentation.
-
-A character string, as defined in §3, on its own describes an s-list with a
-label of that string.
+Indent syntax describes structure through relative indentation.
 
 | Termpose | Data |
 |:---------|:-----|
