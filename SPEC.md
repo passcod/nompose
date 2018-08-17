@@ -129,26 +129,33 @@ For example, the following are all bare labels:
 ### 3.2. Escaping
 [§3.2]: #32-escaping
 
-A backlash invokes an alternative interpretation of the character following that
-backslash. The backslash is called the **escape character**, the combination of
-an escape character and its following character is called an **escape sequence**
-or simply **escape**, and the result is called an **escaped character**.
+A backlash invokes an alternative interpretation of the character following
+that backslash. The backslash is called the **escape character**, the character
+following it is called the **escape literal**, the combination of the two is
+called an **escape sequence** or simply **escape**, and the result is called an
+**escaped character**.
 
 The followings escapes MUST be implemented:
 
 | Escape sequence (input) | Escaped character (result) |
 |:-----------------------:|:--------------------------:|
-|          `\\`           |      a backlash (`\`)      |
-|          `\"`           |    a double-quote (`"`)    |
 |          `\n`           |     a line feed (0xOA)     |
 |          `\r`           |  a carriage return (0xOD)  |
 |          `\t`           |         a tab (0x09)       |
 
-Escapes not present in this table must either:
+Escapes not present in this table must be interpreted as outputting the escape
+literal as-is. Whitespace escape literals are never allowed in bare labels.
 
- - halt parsing with an error, OR
- - trigger a warning AND be ignored such that the character following the escape
-   character is output instead of the escape sequence.
+The table below shows some characters that are not formal escapes but are often
+used as such:
+
+| Escape sequence (input) | Escaped character (result) |
+|:-----------------------:|:--------------------------:|
+|          `\\`           |      a backlash (`\`)      |
+|          `\"`           |    a double-quote (`"`)    |
+|          `\(`           |   an opening paren (`(`)   |
+|          `\)`           |    a closing paren (`)`)   |
+|          `\:`           |        a colon (`:`)       |
 
 ### 3.3. Escaped bare labels
 
